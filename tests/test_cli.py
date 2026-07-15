@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 from lottery_ml import cli
 from lottery_ml.data.fetch import FetchError
@@ -73,3 +74,38 @@ def test_ingest_command_rejects_reversed_year_range(capsys) -> None:
 
     assert exit_code == 2
     assert "from-year must not exceed through-year" in capsys.readouterr().err
+
+
+def test_development_experiment_writes_artifact(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    class FakeReport:
+        def to_dict(self) -> dict[str, object]:
+            return {"schema_version": "1.0.0", "experiment_id": "development-v1"}
+
+    monkeypatch.setattr(cli, "load_canonical", lambda path: [object()])
+    monkeypatch.setattr(
+        cli,
+        "load_experiment_config",
+        lambda path: SimpleNamespace(feature_config=Path("configs/features/v1.json")),
+    )
+    monkeypatch.setattr(cli, "load_feature_config", lambda path: object())
+    monkeypatch.setattr(
+        cli, "run_development_matrix", lambda draws, config, feature_config: FakeReport()
+    )
+
+    output = tmp_path / "artifacts" / "development-v1.json"
+    exit_code = cli.main(
+        [
+            "experiments",
+            "development",
+            "--root",
+            str(tmp_path),
+            "--output",
+            str(output),
+        ]
+    )
+
+    assert exit_code == 0
+    assert json.loads(output.read_text(encoding="utf-8"))["experiment_id"] == "development-v1"
+    assert json.loads(capsys.readouterr().out)["artifact_path"] == str(output)

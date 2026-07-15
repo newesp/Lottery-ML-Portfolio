@@ -54,7 +54,7 @@ def ingest_history(
     proposed.sort(key=lambda draw: draw.draw_date)
     _validate_source_correction_usage(source_corrections, source_corrections_applied)
 
-    previous = _load_canonical(root / "data/processed/power-lottery.json")
+    previous = load_canonical(root / "data/processed/power-lottery.json")
     corrections = _load_corrections(root / "configs/data/corrections.json")
     validation = validate_dataset(
         proposed,
@@ -73,7 +73,7 @@ def ingest_history(
     )
 
 
-def _load_canonical(path: Path) -> list[DrawRecord]:
+def load_canonical(path: Path) -> list[DrawRecord]:
     if not path.exists():
         return []
     payload = _load_json_object(path)
