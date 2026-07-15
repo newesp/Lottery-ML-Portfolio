@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "experiment_id": "development-v1",
+  "mode": "development",
+  "feature_config": "configs/features/v1.json",
+  "cv_validation_years": [2018, 2019, 2020, 2021, 2022, 2023],
+  "holdout_start": "2024-01-01",
+  "seeds": [17, 42, 2026],
+  "feature_sets": ["frequency", "frequency_gap", "temporal_context", "full"],
+  "models": ["logistic_regression", "random_forest", "lightgbm"],
+  "baselines": ["uniform", "rolling_frequency", "shuffled_history"],
+  "hyperparameters": {
+    "logistic_regression": [
+      {"config_id": "lr-c0.1", "C": 0.1},
+      {"config_id": "lr-c1", "C": 1.0}
+    ],
+    "random_forest": [
+      {"config_id": "rf-depth8", "n_estimators": 250, "max_depth": 8, "min_samples_leaf": 5, "max_features": "sqrt"},
+      {"config_id": "rf-leaf10", "n_estimators": 250, "max_depth": null, "min_samples_leaf": 10, "max_features": "sqrt"}
+    ],
+    "lightgbm": [
+      {"config_id": "lgbm-leaves15", "n_estimators": 200, "num_leaves": 15, "learning_rate": 0.05, "min_child_samples": 20},
+      {"config_id": "lgbm-leaves31", "n_estimators": 150, "num_leaves": 31, "learning_rate": 0.05, "min_child_samples": 30}
+    ]
+  }
+}
