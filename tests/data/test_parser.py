@@ -2,7 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from lottery_ml.data.parser import ParseError, parse_year_page
+from lottery_ml.data.parser import (
+    ParseError,
+    SourceCorrection,
+    parse_year_page,
+    parse_year_page_report,
+)
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "nfd"
 
@@ -59,3 +64,25 @@ def test_parse_year_page_maps_real_nfd_columns(
 def test_parse_year_page_rejects_missing_results_table() -> None:
     with pytest.raises(ParseError, match="results table"):
         parse_year_page(b"<html><body>changed</body></html>", expected_year=2026)
+
+
+def test_parse_year_page_applies_exact_versioned_source_correction() -> None:
+    html = (FIXTURES / "power-38-2025-anomaly.html").read_bytes()
+    correction = SourceCorrection(
+        correction_id="nfd-2025-10-09-area2",
+        draw_id="2025-10-09",
+        field="area2",
+        old=28,
+        new=8,
+        reason="NFD source typo verified against independent reports.",
+        sources=("https://news.tvbs.com.tw/life/3011821",),
+    )
+
+    report = parse_year_page_report(
+        html,
+        expected_year=2025,
+        source_corrections=[correction],
+    )
+
+    assert report.draws[0].area2 == 8
+    assert report.corrections_applied == ("nfd-2025-10-09-area2",)

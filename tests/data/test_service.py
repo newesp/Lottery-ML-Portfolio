@@ -29,11 +29,23 @@ def fixture_pages() -> dict[int, bytes]:
     }
 
 
-def initialize_root(root: Path) -> None:
+def initialize_root(
+    root: Path,
+    source_corrections: list[dict[str, object]] | None = None,
+) -> None:
     config = root / "configs/data/corrections.json"
     config.parent.mkdir(parents=True)
     config.write_text(
         json.dumps({"schema_version": "1.0.0", "corrections": []}),
+        encoding="utf-8",
+    )
+    (config.parent / "source-corrections.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0.0",
+                "corrections": source_corrections or [],
+            }
+        ),
         encoding="utf-8",
     )
 
@@ -111,6 +123,37 @@ def test_ingest_history_parse_failure_preserves_all_existing_files(tmp_path: Pat
         )
 
     assert _tree_state(tmp_path) == before
+
+
+def test_ingest_history_applies_and_reports_source_correction(tmp_path: Path) -> None:
+    initialize_root(
+        tmp_path,
+        source_corrections=[
+            {
+                "correction_id": "nfd-2025-10-09-area2",
+                "draw_id": "2025-10-09",
+                "field": "area2",
+                "old": 28,
+                "new": 8,
+                "reason": "NFD source typo verified against independent reports.",
+                "sources": ["https://news.tvbs.com.tw/life/3011821"],
+            }
+        ],
+    )
+    page = (FIXTURES / "power-38-2025-anomaly.html").read_bytes()
+
+    result = ingest_history(
+        root=tmp_path,
+        years=[2025],
+        client=FixtureClient({2025: page}),
+        fetched_at=datetime(2026, 7, 15, 21, 15, tzinfo=TAIPEI),
+        git_commit="abc123",
+    )
+
+    canonical = json.loads((tmp_path / "data/processed/power-lottery.json").read_bytes())
+    manifest = json.loads(result.manifest_path.read_bytes())
+    assert canonical["draws"][0]["area2"] == 8
+    assert manifest["corrections_applied"] == ["nfd-2025-10-09-area2"]
 
 
 def _tree_state(root: Path) -> dict[str, bytes | None]:

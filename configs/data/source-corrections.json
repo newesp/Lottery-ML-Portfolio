@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "corrections": [
+    {
+      "correction_id": "nfd-2025-10-09-area2",
+      "draw_id": "2025-10-09",
+      "field": "area2",
+      "old": 28,
+      "new": 8,
+      "reason": "NFD lists an impossible Area 2 value of 28; independent draw reports list 08.",
+      "sources": [
+        "https://news.tvbs.com.tw/life/3011821",
+        "https://money.udn.com/money/story/122328/9060934"
+      ]
+    }
+  ]
+}
