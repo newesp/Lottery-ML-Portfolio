@@ -1,0 +1,23 @@
+/* Visual QA overrides kept separate so breakpoint intent stays reviewable. */
+.hero h1,
+.page-intro h1 {
+  font-size: clamp(2.7rem, 5vw, 4rem);
+}
+
+.page-intro h1 {
+  font-size: clamp(2.5rem, 4.5vw, 4.1rem);
+}
+
+@media (max-width: 560px) {
+  .site-header nav {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+    row-gap: 0;
+  }
+
+  .site-header nav a {
+    padding: 6px 8px;
+    font-size: 0.7rem;
+  }
+}

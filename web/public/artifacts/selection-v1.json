@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "selection_id": "selection-v1",
+  "development_artifact": "artifacts/experiments/development-v1.json",
+  "development_artifact_sha256": "aabbe6361a8327f3cbe4564a8dd4f9bde59b88b0721f2bbe2ed35e1575aa448e",
+  "holdout_start": "2024-01-01",
+  "selection_metric": "mean_cv_average_hits",
+  "bootstrap_resamples": 10000,
+  "bootstrap_seed": 2026,
+  "areas": {
+    "area1": {
+      "model": "random_forest",
+      "feature_set": "frequency_gap",
+      "config_id": "rf-leaf10",
+      "parameters": {"config_id": "rf-leaf10", "n_estimators": 100, "max_depth": null, "min_samples_leaf": 10, "max_features": "sqrt"},
+      "seeds": [17, 42, 2026]
+    },
+    "area2": {
+      "model": "random_forest",
+      "feature_set": "full",
+      "config_id": "rf-leaf10",
+      "parameters": {"config_id": "rf-leaf10", "n_estimators": 100, "max_depth": null, "min_samples_leaf": 10, "max_features": "sqrt"},
+      "seeds": [17, 42, 2026]
+    }
+  }
+}

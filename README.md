@@ -1,65 +1,66 @@
 # Lottery ML Portfolio
 
-以台灣威力彩歷史資料為題材的 Machine Learning 作品集專案。
-
-這不是「提高中獎率」服務。威力彩開獎近似隨機，本專案刻意選擇一個模型很難產生實用預測力的問題，展示如何建立可信、可重現，而且能誠實呈現 negative result 的 ML workflow。
+以台灣威力彩為題的可重現 ML case study。專案刻意選擇幾乎隨機、難以預測的問題，展示從資料 lineage 到誠實負結果的完整工程能力，而不是提供投注號碼。
 
 ## 展示內容
 
-- NFD 歷史資料抓取、驗證與 immutable snapshots
-- Leakage-safe 資料準備與 feature engineering
-- Uniform／Rolling Frequency／Shuffled History baselines
-- Logistic Regression、Random Forest 與 LightGBM
-- Expanding-window Time Series Cross Validation
-- 2024 年起的 locked temporal holdout
-- Probability、ranking、stability 與 uncertainty evaluation
-- 預先計算的 Experiment Playground
-- 面向技術主管／ML 招募者的 RWD Web case study
-- 供 ML 新手閱讀的繁體中文 learning path
+- NFD Big5 歷史頁面擷取、驗證、versioned correction 與 immutable raw snapshot
+- 1,927 期 canonical draws，SHA-256 content addressing
+- 每期 38 + 8 candidate rows、46 個 leakage-safe features
+- 2018–2023 expanding-window Time Series Cross Validation
+- Logistic Regression、Random Forest、LightGBM 與三個 baselines
+- Frozen selection protocol、2024+ locked holdout、三 seeds ensemble
+- 10,000-resample paired draw bootstrap confidence intervals
+- Next.js static case study 與互動 Experiment Lab，部署到 GitHub Pages
 
-## Python quick start
+最終結果沒有證明可泛化的預測優勢：兩區模型相對 Uniform 的 95% bootstrap CI 均跨越 0，Rolling Frequency baseline 也略優。這正是專案希望展示的判斷力。
 
-需求：Python 3.12 或以上版本。
+## 快速開始
+
+需要 Python 3.12+、Node.js 22 與 pnpm 11。
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -e ".[dev]"
+.venv\Scripts\pip install -e ".[dev]"
+.venv\Scripts\pytest -q
+.venv\Scripts\lottery-ml ingest --root .
+.venv\Scripts\lottery-ml experiments development --root .
+.venv\Scripts\lottery-ml experiments holdout --root .
+
+cd web
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-執行品質檢查：
+完整 development reference matrix 在目前資料約需 12 分鐘；網站讀取已提交的 versioned artifacts，不會讓訪客即時重訓。
 
-```powershell
-python -m pytest -q
-python -m ruff check src tests
-python -m mypy src
+## 專案結構
+
+```text
+configs/       feature、experiment、selection 與 correction registries
+data/          canonical dataset、immutable snapshots、manifests
+artifacts/     development 與 locked holdout 結果
+src/           ingestion、features、models、evaluation、experiment runners
+tests/         contracts、leakage、key safety、determinism 與 CLI tests
+web/           Next.js static portfolio 與 Experiment Lab
+docs/          系統設計、ML 方法、model card 與詳細 plans
 ```
-
-從 NFD 抓取並驗證歷史資料：
-
-```powershell
-lottery-ml ingest --from-year 2008 --through-year 2026 --root .
-```
-
-只有所有 validation gates 通過時，指令才會建立新的 snapshot、manifest 並替換 canonical dataset。相同內容再次執行會回傳 `unchanged`，不會製造重複 snapshot。
 
 ## 文件
 
-- [系統設計](docs/superpowers/specs/2026-07-15-lottery-ml-portfolio-design.md)
-- [交付 roadmap](docs/superpowers/plans/2026-07-15-lottery-ml-portfolio-roadmap.md)
-- [資料管線與操作方式](docs/data-pipeline.md)
-- [文件導覽](docs/README.md)
+- [系統設計](docs/system-design.md)
+- [ML 方法與評估](docs/ml-methodology.md)
+- [Model Card](docs/model-card.md)
+- [資料管線](docs/data-pipeline.md)
 
-## 設計原則
+v1 為繁體中文，英文技術名稱保留以方便延伸查詢。v2 規劃加入人工校對的中英語系切換。
 
-1. 不把 lottery prediction 包裝成有效的投資或投注工具。
-2. Baseline 優先；模型必須證明自己是否真的優於隨機。
-3. 所有時間特徵只使用預測時點以前的資料。
-4. CV、holdout、調參與最終評估的責任清楚分離。
-5. Web 顯示的每個實驗數字都來自版本化 artifact，不手動寫死。
-6. v1 使用繁體中文並保留英文技術名詞；v2 再加入正式英文內容與語系切換。
-7. v1 不使用 GSAP；motion 只用於必要的狀態回饋。
+## 自動化
 
-## Data source
+- `CI`：Python tests / Ruff / mypy 與 web typecheck / ESLint / static build
+- `Deploy GitHub Pages`：`main` push 後部署 `web/out`
+- `Update verified lottery data`：每週一、週四台灣時間 21:15 ingestion；只有驗證成功且內容改變才 commit snapshot
 
-歷史開獎資料來源：[NFD 威力彩歷年資料](https://www.nfd.com.tw/lottery/lottyear/year.htm)。Repository 只保存解析後的事實資料與最小 parser fixtures，不鏡像完整來源頁面。
+## Disclaimer
+
+本專案不是投注建議。Lottery draws 應視為隨機事件；歷史 pattern 不代表未來機率改變。

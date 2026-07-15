@@ -1,0 +1,4 @@
+import { Callout, PageIntro } from "../components/UI";
+
+const findings=[["01","正確的 split 比更複雜的模型重要","隨機 row split 會讓未來資訊滲入 training。以年份 expanding window 評估，才符合真實部署時間順序。"],["02","Baseline 是結論的一部分","Shuffled History 在 development 一度得到最高點估計，正好示範多重比較與小樣本下的偶然高分。"],["03","負結果也能展示 ML 能力","資料 lineage、leakage tests、selection freeze、paired bootstrap 與 reproducibility，比誇張命中宣稱更有工程說服力。"],["04","Lottery 是有意識的反例","題目不適合預測，因此專案焦點是辨認沒有 signal，而不是無止境調參直到看見想要的答案。"]];
+export default function FindingsPage(){return <div className="section-shell page"><PageIntro eyebrow="FINDINGS & LIMITATIONS" title="最成熟的結論，是知道不能宣稱什麼"><p>這個 case study 不把隨機波動包裝成 alpha。它展示如何設計一個能反駁自己的 ML 實驗。</p></PageIntro><div className="finding-list">{findings.map(([id,title,copy])=><article key={id}><span>{id}</span><div><h2>{title}</h2><p>{copy}</p></div></article>)}</div><Callout tone="warning" title="不適用範圍"><p>本專案不是投注建議、不估算期望報酬、不聲稱歷史頻率能改變獨立開獎機率。資料來源也不是台灣彩券官方 API；因此保留來源、修正與驗證紀錄特別重要。</p></Callout></div>}

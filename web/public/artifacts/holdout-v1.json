@@ -1,0 +1,202 @@
+{
+  "areas": {
+    "area1": {
+      "baselines": {
+        "rolling_frequency": {
+          "area": "area1",
+          "average_hits": 0.9924528301886792,
+          "brier_score": 0.13306738255686293,
+          "draw_count": 265,
+          "lift_over_uniform": 1.0475890985324947,
+          "log_loss": 0.4365611406661109,
+          "precision_at_k": 0.16540880503144653,
+          "recall_at_k": 0.16540880503144653
+        },
+        "uniform": {
+          "area": "area1",
+          "average_hits": 0.8716981132075472,
+          "brier_score": 0.13296398891966757,
+          "draw_count": 265,
+          "lift_over_uniform": 0.9201257861635221,
+          "log_loss": 0.4361623253853443,
+          "precision_at_k": 0.14528301886792452,
+          "recall_at_k": 0.14528301886792452
+        }
+      },
+      "ensemble_metrics": {
+        "area": "area1",
+        "average_hits": 0.969811320754717,
+        "brier_score": 0.13525943331432877,
+        "draw_count": 265,
+        "lift_over_uniform": 1.0236897274633123,
+        "log_loss": 0.44338202048919084,
+        "precision_at_k": 0.16163522012578616,
+        "recall_at_k": 0.16163522012578616
+      },
+      "paired_bootstrap_hits_vs_uniform": {
+        "confidence_level": 0.95,
+        "estimate": 0.09811320754716982,
+        "lower": -0.04150943396226415,
+        "resamples": 10000,
+        "seed": 2026,
+        "upper": 0.23773584905660378
+      },
+      "seed_results": [
+        {
+          "metrics": {
+            "area": "area1",
+            "average_hits": 0.9547169811320755,
+            "brier_score": 0.13553942075258377,
+            "draw_count": 265,
+            "lift_over_uniform": 1.0077568134171908,
+            "log_loss": 0.44417079648409424,
+            "precision_at_k": 0.1591194968553459,
+            "recall_at_k": 0.1591194968553459
+          },
+          "seed": 17
+        },
+        {
+          "metrics": {
+            "area": "area1",
+            "average_hits": 0.9358490566037736,
+            "brier_score": 0.13511661164931504,
+            "draw_count": 265,
+            "lift_over_uniform": 0.9878406708595389,
+            "log_loss": 0.4429861304017662,
+            "precision_at_k": 0.1559748427672956,
+            "recall_at_k": 0.1559748427672956
+          },
+          "seed": 42
+        },
+        {
+          "metrics": {
+            "area": "area1",
+            "average_hits": 0.9169811320754717,
+            "brier_score": 0.1358192732910691,
+            "draw_count": 265,
+            "lift_over_uniform": 0.9679245283018869,
+            "log_loss": 0.4451144096847663,
+            "precision_at_k": 0.15283018867924528,
+            "recall_at_k": 0.15283018867924528
+          },
+          "seed": 2026
+        }
+      ],
+      "selection": {
+        "config_id": "rf-leaf10",
+        "feature_set": "frequency_gap",
+        "model": "random_forest",
+        "parameters": {
+          "config_id": "rf-leaf10",
+          "max_depth": null,
+          "max_features": "sqrt",
+          "min_samples_leaf": 10,
+          "n_estimators": 100
+        }
+      }
+    },
+    "area2": {
+      "baselines": {
+        "rolling_frequency": {
+          "area": "area2",
+          "average_hits": 0.14339622641509434,
+          "brier_score": 0.10924862146828544,
+          "draw_count": 265,
+          "lift_over_uniform": 1.1471698113207547,
+          "log_loss": 0.3761968955458006,
+          "precision_at_k": 0.14339622641509434,
+          "recall_at_k": 0.14339622641509434
+        },
+        "uniform": {
+          "area": "area2",
+          "average_hits": 0.10566037735849057,
+          "brier_score": 0.109375,
+          "draw_count": 265,
+          "lift_over_uniform": 0.8452830188679246,
+          "log_loss": 0.3767701612564368,
+          "precision_at_k": 0.10566037735849057,
+          "recall_at_k": 0.10566037735849057
+        }
+      },
+      "ensemble_metrics": {
+        "area": "area2",
+        "average_hits": 0.1320754716981132,
+        "brier_score": 0.1132985216830523,
+        "draw_count": 265,
+        "lift_over_uniform": 1.0566037735849056,
+        "log_loss": 0.3906035319146896,
+        "precision_at_k": 0.1320754716981132,
+        "recall_at_k": 0.1320754716981132
+      },
+      "paired_bootstrap_hits_vs_uniform": {
+        "confidence_level": 0.95,
+        "estimate": 0.026415094339622643,
+        "lower": -0.03018867924528302,
+        "resamples": 10000,
+        "seed": 2026,
+        "upper": 0.0830188679245283
+      },
+      "seed_results": [
+        {
+          "metrics": {
+            "area": "area2",
+            "average_hits": 0.12075471698113208,
+            "brier_score": 0.11382319815893044,
+            "draw_count": 265,
+            "lift_over_uniform": 0.9660377358490566,
+            "log_loss": 0.3920901152452758,
+            "precision_at_k": 0.12075471698113208,
+            "recall_at_k": 0.12075471698113208
+          },
+          "seed": 17
+        },
+        {
+          "metrics": {
+            "area": "area2",
+            "average_hits": 0.12452830188679245,
+            "brier_score": 0.11307992917220973,
+            "draw_count": 265,
+            "lift_over_uniform": 0.9962264150943396,
+            "log_loss": 0.3898283325183056,
+            "precision_at_k": 0.12452830188679245,
+            "recall_at_k": 0.12452830188679245
+          },
+          "seed": 42
+        },
+        {
+          "metrics": {
+            "area": "area2",
+            "average_hits": 0.1320754716981132,
+            "brier_score": 0.11370468631079035,
+            "draw_count": 265,
+            "lift_over_uniform": 1.0566037735849056,
+            "log_loss": 0.3920185486098489,
+            "precision_at_k": 0.1320754716981132,
+            "recall_at_k": 0.1320754716981132
+          },
+          "seed": 2026
+        }
+      ],
+      "selection": {
+        "config_id": "rf-leaf10",
+        "feature_set": "full",
+        "model": "random_forest",
+        "parameters": {
+          "config_id": "rf-leaf10",
+          "max_depth": null,
+          "max_features": "sqrt",
+          "min_samples_leaf": 10,
+          "n_estimators": 100
+        }
+      }
+    }
+  },
+  "data_sha256": "0d439e23aea086e2ed422da7aee1e4597a0a342b9a9e6e4d1762a2099b4d19fd",
+  "development_artifact_sha256": "aabbe6361a8327f3cbe4564a8dd4f9bde59b88b0721f2bbe2ed35e1575aa448e",
+  "draw_count": 1927,
+  "experiment_id": "holdout-v1",
+  "holdout_draw_count": 265,
+  "holdout_start": "2024-01-01",
+  "schema_version": "1.0.0",
+  "selection_id": "selection-v1"
+}
