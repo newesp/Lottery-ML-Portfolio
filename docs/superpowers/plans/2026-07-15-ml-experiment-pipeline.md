@@ -6,7 +6,7 @@
 
 **Architecture:** Python converts each draw into Area 1 and Area 2 candidate rows whose features use only earlier draws. Evaluation splits by draw ID and calendar year, joins probabilities and targets by `(draw_id, area, number)`, and writes schema-versioned JSON artifacts. Holdout evaluation consumes a committed selection protocol; it never performs model or hyperparameter selection.
 
-**Tech Stack:** Python 3.11+, NumPy, pandas, scikit-learn, LightGBM, pytest, Ruff, mypy.
+**Tech Stack:** Python 3.12+, NumPy, pandas, scikit-learn, LightGBM, pytest, Ruff, mypy.
 
 ## Global Constraints
 

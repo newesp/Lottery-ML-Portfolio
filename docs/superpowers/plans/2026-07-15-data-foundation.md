@@ -6,7 +6,7 @@
 
 **Architecture:** Keep transport, parsing, validation, and storage independent. The fetch client returns raw bytes and metadata; the parser converts year-page HTML into typed draw records; validation compares a proposed dataset with the last verified canonical dataset; the publisher writes a new snapshot directory atomically and updates the canonical file only for a verified change. The CLI composes those ports and emits machine-readable status.
 
-**Tech Stack:** Python 3.11+, standard-library dataclasses/JSON/hashlib/pathlib, Requests, Beautiful Soup 4, pytest, Ruff, mypy, setuptools.
+**Tech Stack:** Python 3.12+, standard-library dataclasses/JSON/hashlib/pathlib, Requests, Beautiful Soup 4, pytest, Ruff, mypy, setuptools.
 
 ## Global Constraints
 
@@ -866,7 +866,7 @@ git commit -m "feat: add verified history ingestion command"
 
 - [ ] **Step 2: Add README quick start**
 
-Add Python 3.11 setup, editable installation, test/lint/type commands, and:
+Add Python 3.12 setup, editable installation, test/lint/type commands, and:
 
 ```powershell
 lottery-ml ingest --from-year 2008 --through-year 2026 --root .

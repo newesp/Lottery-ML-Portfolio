@@ -6,7 +6,7 @@
 
 **Architecture:** Python owns ingestion, validation, feature generation, model evaluation, and versioned artifacts. A statically exported Next.js application reads only validated artifacts. GitHub Actions schedules data refresh and publishes the static site to GitHub Pages.
 
-**Tech Stack:** Python 3.11+, scikit-learn, LightGBM, pandas, pytest, Ruff, mypy; Next.js App Router, TypeScript, Apache ECharts; GitHub Actions and GitHub Pages.
+**Tech Stack:** Python 3.12+, scikit-learn, LightGBM, pandas, pytest, Ruff, mypy; Next.js App Router, TypeScript; GitHub Actions and GitHub Pages.
 
 ## Global Constraints
 
