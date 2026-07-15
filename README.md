@@ -19,7 +19,7 @@
 
 ## Python quick start
 
-需求：Python 3.11 或以上版本。
+需求：Python 3.12 或以上版本。
 
 ```powershell
 python -m venv .venv
