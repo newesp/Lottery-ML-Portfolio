@@ -109,3 +109,24 @@ def test_development_experiment_writes_artifact(
     assert exit_code == 0
     assert json.loads(output.read_text(encoding="utf-8"))["experiment_id"] == "development-v1"
     assert json.loads(capsys.readouterr().out)["artifact_path"] == str(output)
+
+
+def test_holdout_experiment_writes_artifact(tmp_path: Path, monkeypatch) -> None:
+    class FakeReport:
+        def to_dict(self) -> dict[str, object]:
+            return {"schema_version": "1.0.0", "experiment_id": "holdout-v1"}
+
+    monkeypatch.setattr(cli, "load_selection", lambda path, root: object())
+    monkeypatch.setattr(cli, "load_feature_config", lambda path: object())
+    monkeypatch.setattr(cli, "load_canonical", lambda path: [object()])
+    monkeypatch.setattr(
+        cli, "run_holdout_evaluation", lambda draws, selection, features: FakeReport()
+    )
+    output = tmp_path / "holdout.json"
+
+    exit_code = cli.main(
+        ["experiments", "holdout", "--root", str(tmp_path), "--output", str(output)]
+    )
+
+    assert exit_code == 0
+    assert json.loads(output.read_text(encoding="utf-8"))["experiment_id"] == "holdout-v1"

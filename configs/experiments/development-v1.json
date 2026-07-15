@@ -15,12 +15,12 @@
       {"config_id": "lr-c1", "C": 1.0}
     ],
     "random_forest": [
-      {"config_id": "rf-depth8", "n_estimators": 250, "max_depth": 8, "min_samples_leaf": 5, "max_features": "sqrt"},
-      {"config_id": "rf-leaf10", "n_estimators": 250, "max_depth": null, "min_samples_leaf": 10, "max_features": "sqrt"}
+      {"config_id": "rf-depth8", "n_estimators": 100, "max_depth": 8, "min_samples_leaf": 5, "max_features": "sqrt"},
+      {"config_id": "rf-leaf10", "n_estimators": 100, "max_depth": null, "min_samples_leaf": 10, "max_features": "sqrt"}
     ],
     "lightgbm": [
-      {"config_id": "lgbm-leaves15", "n_estimators": 200, "num_leaves": 15, "learning_rate": 0.05, "min_child_samples": 20},
-      {"config_id": "lgbm-leaves31", "n_estimators": 150, "num_leaves": 31, "learning_rate": 0.05, "min_child_samples": 30}
+      {"config_id": "lgbm-leaves15", "n_estimators": 120, "num_leaves": 15, "learning_rate": 0.05, "min_child_samples": 20},
+      {"config_id": "lgbm-leaves31", "n_estimators": 100, "num_leaves": 31, "learning_rate": 0.05, "min_child_samples": 30}
     ]
   }
 }

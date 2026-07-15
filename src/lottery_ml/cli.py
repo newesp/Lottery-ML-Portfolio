@@ -19,6 +19,11 @@ from lottery_ml.experiments.config import (
     load_experiment_config,
     load_feature_config,
 )
+from lottery_ml.experiments.holdout import (
+    SelectionError,
+    load_selection,
+    run_holdout_evaluation,
+)
 from lottery_ml.experiments.runner import run_development_matrix
 
 TAIPEI = timezone(timedelta(hours=8))
@@ -43,6 +48,16 @@ def build_parser() -> argparse.ArgumentParser:
     development.add_argument(
         "--output", type=Path, default=Path("artifacts/experiments/development-v1.json")
     )
+    holdout = experiment_commands.add_parser(
+        "holdout", help="evaluate the frozen model selection on the locked holdout"
+    )
+    holdout.add_argument("--root", type=Path, default=Path.cwd())
+    holdout.add_argument(
+        "--selection", type=Path, default=Path("configs/experiments/selection-v1.json")
+    )
+    holdout.add_argument(
+        "--output", type=Path, default=Path("artifacts/experiments/holdout-v1.json")
+    )
     return parser
 
 
@@ -57,6 +72,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return cast(int, error.code)
     if args.command == "experiments" and args.experiment_command == "development":
         return _run_development(args)
+    if args.command == "experiments" and args.experiment_command == "holdout":
+        return _run_holdout(args)
     if args.command != "ingest":
         parser.print_usage(sys.stderr)
         return 2
@@ -122,6 +139,42 @@ def _run_development(args: argparse.Namespace) -> int:
         report = run_development_matrix(draws, config, feature_config)
         write_json_artifact(output_path, report.to_dict())
     except (ArtifactError, ConfigError, DatasetFileError, OSError, ValueError) as error:
+        print(str(error), file=sys.stderr)
+        return 1
+    print(
+        json.dumps(
+            {"status": "completed", "artifact_path": str(output_path)},
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+def _run_holdout(args: argparse.Namespace) -> int:
+    root = cast(Path, args.root).resolve()
+    selection_path = cast(Path, args.selection)
+    if not selection_path.is_absolute():
+        selection_path = root / selection_path
+    output_path = cast(Path, args.output)
+    if not output_path.is_absolute():
+        output_path = root / output_path
+    try:
+        selection = load_selection(selection_path, root)
+        feature_config = load_feature_config(root / "configs/features/v1.json")
+        draws = load_canonical(root / "data/processed/power-lottery.json")
+        if not draws:
+            raise DatasetFileError("canonical lottery history is empty")
+        report = run_holdout_evaluation(draws, selection, feature_config)
+        write_json_artifact(output_path, report.to_dict())
+    except (
+        ArtifactError,
+        ConfigError,
+        DatasetFileError,
+        SelectionError,
+        OSError,
+        ValueError,
+    ) as error:
         print(str(error), file=sys.stderr)
         return 1
     print(

@@ -25,6 +25,7 @@ from lottery_ml.models.baselines import (
 from lottery_ml.models.pipelines import build_estimator
 
 RunKind = Literal["model", "baseline"]
+FoldPartition = tuple[ExpandingYearFold, pd.DataFrame, pd.DataFrame]
 METRIC_NAMES = (
     "average_hits",
     "precision_at_k",
@@ -122,6 +123,7 @@ def run_development_matrix(
         ExpandingYearFold(validation_year=year, train_end_year=year - 1)
         for year in config.cv_validation_years
     )
+    partitions = tuple((fold, *split_candidate_rows(frame, fold)) for fold in folds)
     seed = config.seeds[0]
     selected: dict[str, dict[str, dict[str, object]]] = {"area1": {}, "area2": {}}
     runs: list[ExperimentRun] = []
@@ -135,8 +137,7 @@ def run_development_matrix(
             scored: list[tuple[float, float, str, dict[str, object]]] = []
             for parameters in candidates:
                 evaluations = _evaluate_model(
-                    frame,
-                    folds,
+                    partitions,
                     area_name,
                     model_name,
                     "full",
@@ -150,8 +151,7 @@ def run_development_matrix(
             selected[area_name][model_name] = dict(parameters)
             for feature_set in config.feature_sets:
                 evaluations = _evaluate_model(
-                    frame,
-                    folds,
+                    partitions,
                     area_name,
                     model_name,
                     feature_set,
@@ -173,7 +173,7 @@ def run_development_matrix(
                 )
 
         for baseline in config.baselines:
-            evaluations = _evaluate_baseline(frame, folds, area_name, baseline, seed)
+            evaluations = _evaluate_baseline(partitions, area_name, baseline, seed)
             runs.append(
                 _make_run(
                     kind="baseline",
@@ -202,8 +202,7 @@ def run_development_matrix(
 
 
 def _evaluate_model(
-    frame: pd.DataFrame,
-    folds: tuple[ExpandingYearFold, ...],
+    partitions: tuple[FoldPartition, ...],
     area: AreaName,
     model_name: str,
     feature_set: str,
@@ -213,8 +212,9 @@ def _evaluate_model(
 ) -> tuple[FoldEvaluation, ...]:
     columns = list(feature_columns(feature_set, feature_config))
     results: list[FoldEvaluation] = []
-    for fold in folds:
-        train, validation = split_candidate_rows(frame, fold)
+    for fold, train_frame, validation_frame in partitions:
+        train = train_frame
+        validation = validation_frame
         train = train.loc[train["area"] == area]
         validation = validation.loc[validation["area"] == area]
         estimator = cast(ProbabilityEstimator, build_estimator(model_name, parameters, seed))
@@ -228,15 +228,13 @@ def _evaluate_model(
 
 
 def _evaluate_baseline(
-    frame: pd.DataFrame,
-    folds: tuple[ExpandingYearFold, ...],
+    partitions: tuple[FoldPartition, ...],
     area: AreaName,
     baseline: str,
     seed: int,
 ) -> tuple[FoldEvaluation, ...]:
     results: list[FoldEvaluation] = []
-    for fold in folds:
-        _, validation = split_candidate_rows(frame, fold)
+    for fold, _, validation in partitions:
         if baseline == "uniform":
             predictions = predict_uniform(validation)
         elif baseline == "rolling_frequency":

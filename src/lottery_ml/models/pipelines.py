@@ -26,7 +26,7 @@ def build_estimator(model_name: str, params: dict[str, object], seed: int) -> Ba
             max_features=_string_param(model_params, "max_features"),
             class_weight=None,
             random_state=seed,
-            n_jobs=1,
+            n_jobs=-1,
         )
     if model_name == "lightgbm":
         return LGBMClassifier(
@@ -36,7 +36,7 @@ def build_estimator(model_name: str, params: dict[str, object], seed: int) -> Ba
             min_child_samples=_int_param(model_params, "min_child_samples"),
             class_weight=None,
             random_state=seed,
-            n_jobs=1,
+            n_jobs=-1,
             verbosity=-1,
         )
     raise ValueError(f"unknown model: {model_name}")
