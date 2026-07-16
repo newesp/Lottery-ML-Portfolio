@@ -16,6 +16,6 @@ export function Callout({ tone = "neutral", title, children }: { tone?: "neutral
   return <aside className={`callout ${tone}`}><strong>{title}</strong><div>{children}</div></aside>;
 }
 
-export function Steps({ items }: { items: Array<[string, string, string]> }) {
+export function Steps({ items }: { items: Array<[string, string, ReactNode]> }) {
   return <ol className="steps">{items.map(([index, title, copy]) => <li key={index}><span>{index}</span><div><h3>{title}</h3><p>{copy}</p></div></li>)}</ol>;
 }
