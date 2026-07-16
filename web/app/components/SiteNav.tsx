@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 const links = [
-  ["/", "Overview"], ["/data", "Data"], ["/features", "Features"],
-  ["/experiments", "ML Lab"], ["/evaluation", "Evaluation"],
-  ["/findings", "Findings"], ["/reproducibility", "Reproduce"],
+  ["/", "總覽"], ["/data", "資料"], ["/features", "特徵工程"],
+  ["/experiments", "實驗室"], ["/evaluation", "最終評估"],
+  ["/findings", "結論與限制"], ["/reproducibility", "重現方法"],
 ] as const;
 
 export function SiteNav() {

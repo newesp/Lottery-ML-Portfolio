@@ -8,6 +8,88 @@
   font-size: clamp(2.5rem, 4.5vw, 4.1rem);
 }
 
+.mini-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+}
+
+.mini-compare span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mini-compare b {
+  color: white;
+}
+
+.mini-compare small {
+  color: #9dafb7;
+  line-height: 1.45;
+}
+
+.metric {
+  min-width: 0;
+}
+
+.metric strong {
+  overflow-wrap: anywhere;
+}
+
+.metric small {
+  line-height: 1.45;
+}
+
+.feature-card {
+  min-height: 285px;
+}
+
+.feature-card h3 {
+  margin-top: 32px;
+}
+
+.lab-controls label {
+  letter-spacing: 0.04em;
+}
+
+.lab-summary {
+  margin-bottom: 0;
+}
+
+.lab-summary small {
+  line-height: 1.5;
+}
+
+.lab-help {
+  margin: 0 0 25px;
+  padding: 14px 24px;
+  background: #d8ddd9;
+  color: #425159;
+  font-size: 0.86rem;
+}
+
+.bar-row {
+  grid-template-columns: minmax(220px, 1.25fr) minmax(160px, 3fr) 75px;
+}
+
+.bar-label b,
+.bar-label span {
+  white-space: normal;
+}
+
+.ci-explanation {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+@media (max-width: 900px) {
+  .bar-row {
+    grid-template-columns: minmax(150px, 1.4fr) minmax(120px, 2fr) 65px;
+  }
+}
+
 @media (max-width: 560px) {
   .site-header nav {
     display: flex;
@@ -19,5 +101,21 @@
   .site-header nav a {
     padding: 6px 8px;
     font-size: 0.7rem;
+  }
+
+  .mini-compare {
+    grid-template-columns: 1fr;
+  }
+
+  .bar-row {
+    grid-template-columns: minmax(105px, 1.4fr) minmax(70px, 2fr) 55px;
+  }
+
+  .lab-help {
+    padding: 12px;
+  }
+
+  .feature-card {
+    min-height: auto;
   }
 }

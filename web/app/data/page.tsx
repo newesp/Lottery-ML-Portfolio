@@ -2,9 +2,14 @@ import { Callout, Metric, PageIntro, Steps } from "../components/UI";
 import { dev } from "../lib/results";
 
 export default function DataPage() { return <div className="section-shell page">
-  <PageIntro eyebrow="DATA LINEAGE" title="資料不是下載完就算完成"><p>歷屆資料取自 NFD 年度頁面。pipeline 先擷取 Big5 HTML、解析欄位、驗證完整性，再發布 canonical dataset 與 immutable snapshot。</p></PageIntro>
-  <div className="metrics-grid compact"><Metric value={dev.draw_count.toLocaleString()} label="Verified draws"/><Metric value="2008-01-24" label="Date minimum"/><Metric value="2026-07-13" label="Date maximum"/><Metric value="SHA-256" label="Content addressed"/></div>
-  <section className="content-section"><h2>Ingestion contract</h2><Steps items={[["01","Fetch source","依年度抓取 https://www.nfd.com.tw/lottery/lottyear/year.htm 的 Big5 HTML。"],["02","Parse & normalize","解析民國／西元日期、第一區 6 號與第二區 1 號。"],["03","Validate","檢查範圍、重複、日期遞增、舊資料不可無故改寫。"],["04","Publish atomically","驗證全過才一次替換 canonical；失敗不留下半成品。"]]}/></section>
-  <Callout title="可追溯的來源修正"><p>NFD 的 2025-10-09 第二區原始頁面記為 28（超出 1–8）。專案以具 ID、舊值、新值、理由與交叉來源的 versioned correction 修正為 08；每次 ingestion 必須實際套用且不得重複。</p></Callout>
-  <section className="content-section"><h2>Immutable snapshot 策略</h2><p className="body-copy">每週一、週四台灣時間 21:15 可由 GitHub Actions 抓取。只有資料內容改變且驗證成功時才建立新 snapshot、manifest 與 canonical；GitHub Pages 隨 repository artifact 重新部署，不需要 Vercel 或常駐 Python server。</p><code className="hash">{dev.data_sha256}</code></section>
+  <PageIntro eyebrow="DATA LINEAGE · 資料來龍去脈" title="資料不是下載完就算完成"><p>歷屆資料取自 NFD 年度頁面。資料管線（pipeline）會先抓取 Big5 編碼的網頁、整理欄位並檢查是否完整，再產生標準資料集（canonical dataset）與不可任意改動的備份（immutable snapshot）。因此每個數字都能追查來源，而不是一份來歷不明的試算表。</p></PageIntro>
+  <div className="metrics-grid compact"><Metric value={dev.draw_count.toLocaleString()} label="Verified draws｜已驗證期數" note="每一期都通過格式與範圍檢查"/><Metric value="2008-01-24" label="Date minimum｜最早日期"/><Metric value="2026-07-13" label="Date maximum｜最晚日期"/><Metric value="SHA-256" label="Content addressed｜內容指紋" note="資料一改，指紋就會不同"/></div>
+  <section className="content-section"><h2>Ingestion contract｜資料匯入規則</h2><Steps items={[
+    ["01","Fetch source｜抓取來源","依年度抓取 NFD 的 Big5 HTML，也就是先保存網站提供的原始內容。"],
+    ["02","Parse & normalize｜解析並統一格式","把民國與西元日期、第一區 6 個號碼、第二區 1 個號碼整理成一致欄位。"],
+    ["03","Validate｜檢查資料","確認號碼範圍正確、沒有重複、日期依序增加，而且舊資料不會無故被改寫。"],
+    ["04","Publish atomically｜一次完整發布","所有檢查通過才替換正式資料；任何一步失敗就保留舊版本，避免留下只更新一半的資料。"],
+  ]}/></section>
+  <Callout title="可追溯的來源修正"><p>NFD 的 2025-10-09 第二區原始頁面記為 28，但第二區只可能是 1–8。專案用 versioned correction（有版本紀錄的修正）把它改為 08，並保存修正 ID、舊值、新值、理由與交叉來源；任何人都能知道哪一筆被改過、為什麼改。</p></Callout>
+  <section className="content-section"><h2>Immutable snapshot｜不可任意改動的資料備份</h2><p className="body-copy">GitHub Actions（自動排程工具）可在每週一、週四台灣時間 21:15 抓取資料。只有內容真的改變且驗證成功時，才建立新的 snapshot（當下完整備份）、manifest（檔案清單與資訊）及 canonical dataset（正式標準資料）。下方 SHA-256 是本次資料的數位指紋，可用來確認大家使用的是同一份內容。</p><code className="hash">{dev.data_sha256}</code></section>
 </div>; }
