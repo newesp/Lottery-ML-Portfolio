@@ -5,7 +5,7 @@ import { SiteNav } from "./components/SiteNav";
 
 export const metadata: Metadata = {
   title: "Lottery ML Lab｜台灣威力彩機器學習案例",
-  description: "從可驗證資料管線、Time Series CV 到誠實負結果的 ML case study。",
+  description: "用一般人也看得懂的方式，解釋可驗證資料管線、時間交叉驗證與威力彩機器學習實驗的誠實負結果。",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -16,7 +16,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteNav />
         <main id="main">{children}</main>
         <footer className="site-footer">
-          <p>Lottery ML Lab · 可重現的 ML case study，不是投注建議。</p>
+          <p>Lottery ML Lab · 可重現、可檢查的機器學習案例，不是投注建議。</p>
           <a href="https://github.com/newesp/Lottery-ML-Portfolio">GitHub 原始碼 ↗</a>
         </footer>
       </body>
