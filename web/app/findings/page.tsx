@@ -1,8 +1,9 @@
-import { Callout, PageIntro } from "../components/UI";
+import type { ReactNode } from "react";
+import { Callout, PageIntro, RepoLink } from "../components/UI";
 
-const findings=[
+const findings: Array<[string, string, ReactNode]> = [
   ["01","正確的 split（資料切法）比複雜模型更重要","如果隨機打散所有資料再分成訓練與測試，模型可能間接看到未來資訊。Expanding-window（逐年擴大的訓練窗口）則永遠只拿過去預測下一年，更接近真實使用情境。"],
-  ["02","Baseline（簡單比較基準）也是結論的一部分","Uniform 代表完全隨機選號；Rolling Frequency 只按近期頻率排序；Shuffled History 則把歷史關係打亂。若複雜模型連這些簡單方法都無法穩定超越，就不能宣稱它學到可靠規律。"],
+  ["02","Baseline（簡單比較基準）也是結論的一部分",<><RepoLink path="src/lottery_ml/models/baselines.py">Uniform、Rolling Frequency 與 Shuffled History</RepoLink>分別代表完全隨機選號、依近期頻率排序，以及把歷史關係打亂。若複雜模型連這些簡單方法都無法穩定超越，就不能宣稱它學到可靠規律。</>],
   ["03","負結果也能展示 ML 能力","沒有預測優勢不等於專案失敗。資料 lineage（來源追蹤）、leakage tests（防偷看答案測試）、selection freeze（先鎖定選擇）、paired bootstrap（估計差距的不確定性）與 reproducibility（可重現性），都能證明實驗是否可信。"],
   ["04","Lottery（彩票）是有意識選擇的反例","開獎本來就應該接近隨機，因此這個專案的任務是辨認「沒有穩定 signal（可預測訊號）」，而不是一直調整模型，直到碰巧找到一個看起來漂亮的分數。"],
 ];

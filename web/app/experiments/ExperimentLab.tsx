@@ -19,7 +19,7 @@ const metricNames: Record<string,string> = {
   log_loss:"Log loss｜信心錯誤代價",
 };
 const metricHelp: Record<string,string> = {
-  average_hits:"每一期最後選出的號碼，平均有幾個真的開出；數值越高越好。",
+  average_hits:"每一期最後選出的號碼，平均有幾個真的開出；數值越高越好。這不是中獎率：0.88 代表平均每期命中 0.88 個號碼，不是 88% 的中獎機率。",
   lift_over_uniform:"模型平均命中數 ÷ 隨機選號的預期平均命中數；1 代表兩者相同，1.05 代表模型約高 5%，數值越高越好。",
   brier_score:"把預測機率與實際結果的差距平方後取平均；數值越低，代表機率預測越準。",
   log_loss:"答錯又過度有信心時會被重罰；數值越低越好。",
