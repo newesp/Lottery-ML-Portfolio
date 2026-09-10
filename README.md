@@ -15,6 +15,14 @@
 
 最終結果沒有證明可泛化的預測優勢：兩區模型相對 Uniform 的 95% bootstrap CI 均跨越 0，Rolling Frequency baseline 也略優。這正是專案希望展示的判斷力。
 
+## 使用技術
+
+- **Machine Learning & Data Processing**：Python 3.12+、scikit-learn (Logistic Regression, Random Forest)、LightGBM、NumPy、pandas、Paired Bootstrap 統計檢驗
+- **Data Engineering & Lineage**：Requests、BeautifulSoup4 (歷史 Big5 HTML 擷取與解析)、SHA-256 Content Addressing、Immutable Raw Snapshots
+- **Frontend & Visualization**：Next.js 16 (App Router / Static Export)、React 19、TypeScript 5、客製化互動實驗室 (Experiment Lab)
+- **Quality & Verification**：pytest (合約、Leakage-safe、決定性測試)、mypy (Strict mode)、Ruff (Linter & Formatter)、ESLint
+- **CI/CD & Infrastructure**：GitHub Actions (自動化 CI、定時排程資料更新)、GitHub Pages 靜態託管
+
 ## 快速開始
 
 需要 Python 3.12+、Node.js 22 與 pnpm 11。
