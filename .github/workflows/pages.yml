@@ -2,6 +2,11 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: [main]
+  workflow_run:
+    workflows: ["Update verified lottery data"]
+    types:
+      - completed
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -12,9 +17,12 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: pnpm/action-setup@v4
         with:
           version: 11.7.0

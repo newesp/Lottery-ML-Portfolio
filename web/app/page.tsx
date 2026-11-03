@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Callout, Eyebrow, Metric, RepoLink, Steps } from "./components/UI";
-import { dev, locked, num } from "./lib/results";
+import { getLatestDatasetSummary } from "./lib/dataset";
+import { locked, num } from "./lib/results";
 
 export default function Home() {
+  const dataset = getLatestDatasetSummary();
   const area1 = locked.areas.area1;
   return <>
     <section className="hero section-shell">
@@ -23,7 +25,7 @@ export default function Home() {
       </div>
     </section>
     <section className="metrics-band"><div className="section-shell metrics-grid">
-      <Metric value={dev.draw_count.toLocaleString()} label="歷史開獎期數" note="涵蓋 2008–2026 年"/>
+      <Metric value={dataset.draw_count.toLocaleString()} label="歷史開獎期數" note={`涵蓋 ${dataset.date_min.slice(0, 4)}–${dataset.date_max.slice(0, 4)} 年`}/>
       <Metric value="46" label="每期要評分的候選號碼" note="第一區 38 個＋第二區 8 個"/>
       <Metric value="6" label="Time Series CV 時間測試輪次" note="逐年模擬 2018–2023"/>
       <Metric value={String(locked.holdout_draw_count)} label="Locked holdout 最終測試期數" note="2024 年後才一次驗收"/>
