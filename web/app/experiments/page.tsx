@@ -8,28 +8,27 @@ export default function ExperimentsPage() {
   return (
     <div className="section-shell page wide">
       <PageIntro
-        eyebrow="PRECOMPUTED EXPERIMENT MATRIX · 預先算好的實驗比較"
-        title="自己切換條件，看模型是否真的比較好"
+        eyebrow="PRECOMPUTED EXPERIMENT MATRIX ｜ 預先算好的實驗矩陣"
+        title="自由切換條件，檢驗複雜模型是否真有優勢"
       >
         <p>
-          選擇號碼區域、評估指標與 feature set（使用的線索組合），就能比較{" "}
-          {facts.devRunCount} 次 runs（完整實驗）與 {facts.devFoldCount} 筆 fold
-          results（各時間測試輪次的結果）。所有數字都由
+          切換下方的號碼區域、評估指標與特徵組合，即可交叉比對{" "}
+          {facts.devRunCount} 組完整實驗（Runs）與 {facts.devFoldCount} 筆時間驗證輪次（Folds）的成績。所有數據皆讀取自
           <RepoLink path="artifacts/experiments/development-v1.json">
-            有版本紀錄的 Python 結果檔
+            納入版本控制的 Python 實驗結果檔
           </RepoLink>
-          產生；瀏覽器只負責篩選與畫圖，不會為了呈現好看的結果而重新訓練模型。
+          ；網頁端只負責篩選與視覺化，不會為了湊出漂亮數字而在瀏覽器裡動態重訓模型。
         </p>
       </PageIntro>
       <ExperimentLab runs={dev.runs} />
-      <Callout title="為什麼不把所有組合都無限嘗試？">
+      <Callout title="為什麼不無止境地嘗試所有參數組合？">
         <p>
+          在隨機性極高的資料上，嘗試越多種參數組合，就越容易碰巧篩出一組「在歷史資料上看起來很準」的假象（多重比較偏誤）。因此，
           <RepoLink path="configs/experiments/development-v1.json">
-            Hyperparameters（模型內部設定）
+            超參數（Hyperparameters）
           </RepoLink>
-          只在 full features 與 development folds（開發期時間測試）中挑選，再把固定設定拿去比較四種 feature
-          sets。開發比較先使用一個 seed（隨機起點）控制計算量；真正的 locked holdout 最終驗收才使用{" "}
-          {facts.selectionSeeds.join("、")} {facts.ensembleSeedCount} 個 seeds 組成 ensemble（綜合多次結果），檢查結果是否太依賴一次隨機運氣。
+          只在開發期（Development Folds）搭配完整特徵集選定，接著便將設定固定，用來公平比較四種特徵組合。開發階段先以單一隨機起點（Seed）控制運算量；直到最後的盲測驗收（Locked Holdout），才採用{" "}
+          {facts.selectionSeeds.join("、")} 共 {facts.ensembleSeedCount} 組 Seeds 進行集成評估（Ensemble），確認結果不是單一隨機起點帶來的僥倖。
         </p>
       </Callout>
     </div>

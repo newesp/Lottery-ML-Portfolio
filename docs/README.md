@@ -1,29 +1,34 @@
 # 文件導覽
 
-本目錄將同時服務兩種讀者：
+本目錄服務兩種主要的閱讀需求：
 
-- 想在數分鐘內理解專案價值的技術主管／ML 招募者。
-- 希望從實作反向學習 ML 的專案作者與初學者。
+- 希望在幾分鐘內掌握系統架構與工程嚴謹度的技術團隊與審閱者。
+- 希望透過真實案例深入了解時間序列驗證與防洩漏設計的開發者。
 
-## 目前文件
+## 核心文件
 
-- [完整系統設計](superpowers/specs/2026-07-15-lottery-ml-portfolio-design.md)
+- [系統設計](system-design.md)
+- [ML 方法與評估](ml-methodology.md)
+- [Model Card](model-card.md)
+- [資料管線與操作方式](data-pipeline.md)
+- [前瞻盲測帳本規格](specs/forward-test-ledger.md)
+- [Holdout v1.1 勘誤說明](specs/holdout-v1.1-erratum.md)
 
-## 實作階段將建立的文件
+## 規劃與延伸主題
 
 ### 入門與導覽
 
 - `learning-path.md`：建議閱讀順序。
-- `glossary.md`：英文技術名詞與繁體中文解釋。
+- `glossary.md`：英文技術名詞與繁體中文對照說明。
 
-### Data
+### 資料工程（Data）
 
 - `data/data-source.md`
 - `data/ingestion-and-snapshots.md`
 - `data/validation-and-cleaning.md`
 - `data/data-contract.md`
 
-### Machine Learning
+### 機器學習（Machine Learning）
 
 - `ml/problem-formulation.md`
 - `ml/feature-engineering.md`
@@ -33,18 +38,18 @@
 - `ml/time-series-cross-validation.md`
 - `ml/evaluation-metrics.md`
 
-### Experiments and reproducibility
+### 實驗與可重現性（Experiments & Reproducibility）
 
 - `experiments/experiment-protocol.md`
 - `experiments/artifact-schema.md`
 - `experiments/reproducibility.md`
 
-### Web
+### 前端展示（Web）
 
 - `web/information-architecture.md`
 - `web/responsive-design.md`
 
-### Architecture Decision Records
+### 架構決策紀錄（ADR）
 
 - `decisions/ADR-001-static-experiment-matrix.md`
 - `decisions/ADR-002-expanding-window-validation.md`
@@ -53,4 +58,4 @@
 - `decisions/ADR-005-versioned-data-snapshots.md`
 - `decisions/ADR-006-zh-tw-first-localization.md`
 
-每篇 ML 教學文件都應包含：直覺解釋、必要數學、專案實作、常見錯誤、輸出解讀、對應程式碼及可繼續搜尋的英文關鍵字。
+每篇方法論文件均涵蓋：直覺概念、數學定義、專案實作細節、常見陷阱、結果判讀方式，以及對應的程式碼位置與英文檢索關鍵字。

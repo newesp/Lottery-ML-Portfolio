@@ -38,43 +38,46 @@ export default function Home() {
     <>
       <section className="hero section-shell">
         <div>
-          <Eyebrow>REPRODUCIBLE ML CASE STUDY · 可重現的機器學習案例</Eyebrow>
+          <Eyebrow>REPRODUCIBLE ML CASE STUDY ｜ 經得起檢驗的機器學習實測</Eyebrow>
           <h1>
-            當預測目標是隨機的，<br />
-            <em>ML 工程還能證明什麼？</em>
+            威力彩幾乎純屬隨機，<br />
+            <em>那這套機器學習系統究竟在測什麼？</em>
           </h1>
           <p className="hero-copy">
-            這個專案用台灣威力彩示範一套
-            <RepoLink path="docs/system-design.md">完整的機器學習流程</RepoLink>
-            ：保存不可任意改動的原始資料備份（immutable snapshot）、確保模型偷看不到未來答案（leakage-safe
-            features）、依時間順序反覆測試（Time Series Cross Validation），最後才打開保留資料做總驗收（locked
-            holdout）。重點不是提供明牌，而是證明實驗過程經得起檢查。
+            彩券開獎是標準的隨機事件，指望靠演算法算出下期頭獎並不切實際。但正因為結果難以預測，它反而成了檢驗機器學習工程紀律的最佳試金石：這套
+            <RepoLink path="docs/system-design.md">端到端驗證管線</RepoLink>
+            從源頭為歷史資料打上 SHA-256 數位指紋防竄改、嚴格切齊時間軸杜絕偷看未來答案（Data
+            Leakage）、依年份向前滾動回測，最後將 {facts.holdoutStartYear}{" "}
+            年後的資料封存為只測一次的盲測集（Locked
+            Holdout）。重點不在報明牌，而在示範一套連面對隨機世界都不作弊、不硬凹的實驗流程。
           </p>
           <div className="button-row">
             <Link className="button primary" href="/experiments">
-              進入 Experiment Lab 實驗室
+              進入互動實驗室
             </Link>
             <Link className="button secondary" href="/reproducibility">
-              查看如何重現結果
+              查看本機重現步驟
             </Link>
           </div>
         </div>
         <div className="hero-panel" aria-label="專案關鍵結果">
           <span className="status">
-            <i /> PIPELINE VERIFIED · 流程已驗證
+            <i /> PIPELINE VERIFIED ｜ 端到端流程驗證通過
           </span>
           <div className="hero-number">{num(area1.ensemble_metrics.average_hits)}</div>
           <p>
-            模型在最終測試中，每期第一區平均命中 {num(area1.ensemble_metrics.average_hits)} 個號碼
+            模型在盲測封存期中，每期第一區挑 {facts.game.area1.pick} 顆平均對中{" "}
+            {num(area1.ensemble_metrics.average_hits)} 顆號碼
           </p>
           <small className="hero-meaning">
-            「平均命中」是選出的 {facts.game.area1.pick} 個號碼中，平均有幾個與開獎號碼相同；不是中獎率，也不是頭獎機率。
+            白話來說，每期選 {facts.game.area1.pick} 顆球，平均對中不到 1
+            顆。這只是單純的號碼命中統計，既非中獎率，更與頭獎機率無關。
           </small>
           <div className="mini-compare">
             <span>
-              <b>Uniform {num(area1.baselines.uniform.average_hits)}</b>
+              <b>隨機期望值 {num(area1.baselines.uniform.average_hits)}</b>
               <small>
-                隨機選號每期理論期望命中 {num(area1.baselines.uniform.average_hits)} 個
+                隨機選號每期理論期望命中 {num(area1.baselines.uniform.average_hits)} 顆
               </small>
             </span>
             <span>
@@ -88,62 +91,62 @@ export default function Home() {
         <div className="section-shell metrics-grid">
           <Metric
             value={dataset.draw_count.toLocaleString()}
-            label="歷史開獎期數"
-            note={`涵蓋 ${dataset.date_min_year}–${dataset.date_max_year} 年`}
+            label="完整歷史開獎期數"
+            note={`涵蓋 ${dataset.date_min_year}–${dataset.date_max_year} 年，期期皆有雜湊存證`}
           />
           <Metric
             value={String(facts.game.totalCandidates)}
-            label="每期要評分的候選號碼"
-            note={`第一區 ${facts.game.area1.max} 個＋第二區 ${facts.game.area2.max} 個`}
+            label="每期獨立評分候選碼"
+            note={`第一區 ${facts.game.area1.max} 碼＋第二區 ${facts.game.area2.max} 碼分開建模`}
           />
           <Metric
             value={String(facts.cv.roundCount)}
-            label="Time Series CV 時間測試輪次"
-            note={`逐年模擬 ${facts.cv.rangeText}`}
+            label="時間序列回測輪次"
+            note={`${facts.cv.rangeText} 年逐年向前滾動驗證`}
           />
           <Metric
             value={String(facts.holdout.holdout_draw_count)}
-            label="Locked holdout 最終測試期數"
-            note={`${facts.holdoutStartYear} 年後才一次驗收`}
+            label="封存盲測驗收期數"
+            note={`${facts.holdoutStartYear} 年後資料完全隔離，定案後一次開箱`}
           />
         </div>
       </section>
       <section className="section-shell content-section">
         <div className="section-heading">
-          <Eyebrow>END-TO-END WORKFLOW · 完整工作流程</Eyebrow>
-          <h2>從來源網頁到一般人也能檢查的結論</h2>
+          <Eyebrow>ENGINEERING DISCIPLINE ｜ 四道防作弊工程防線</Eyebrow>
+          <h2>把每個環節攤在陽光下，讓數據自己說話</h2>
         </div>
         <Steps
           items={[
             [
               "01",
-              "Fetch & Snapshot｜抓取並保存",
-              "讀取來源 Big5 HTML，留下 SHA-256 數位指紋與 immutable snapshot；也就是保存一份可核對、不能悄悄竄改的原始資料。",
+              "Fetch & Snapshot｜爬蟲與原始存證",
+              "抓取早期 Big5 編碼的歷史網頁時，同步寫入不可改動的原始快照（Immutable Snapshot）並計算 SHA-256 數位指紋，確保歷史開獎紀錄無法在事後被悄悄修改。",
             ],
             [
               "02",
-              "Feature Engineering｜整理模型線索",
-              "把每個候選號碼各做成一列資料，而且只使用當期開獎前已經知道的歷史資訊。",
+              "Feature Engineering｜嚴防偷看答案的特徵工程",
+              "將每期候選號碼拆為獨立資料列，並嚴格限制模型只能讀取當期開獎前的歷史統計，從架構上杜絕未來資訊洩漏（Data Leakage）。",
             ],
             [
               "03",
-              "Temporal Evaluation｜按時間測試",
-              `用 Expanding-window CV 逐年模擬「拿過去預測未來」，並把 ${facts.holdoutStartYear} 年後資料鎖成最後才看的 holdout。`,
+              "Temporal Evaluation｜按時間軸向前滾動回測",
+              `彩券資料具有時間順序，隨機打散切分只會造成資訊外溢。實驗採用 Expanding-window CV 逐年模擬「拿過去預測未來」，並將 ${facts.holdoutStartYear} 年後的資料鎖進盲測區，調參完畢才開箱驗收。`,
             ],
             [
               "04",
-              "Communicate Honestly｜誠實解讀",
-              "同時呈現 baseline（簡單比較基準）、bootstrap CI（不確定範圍）與負結果，不把偶然命中包裝成投注能力。",
+              "Communicate Honestly｜誠實面對負結果",
+              "同時擺出隨機選號與歷史累積頻率作為對照基準，並透過 Paired Bootstrap 檢驗信賴區間。既然差距未達統計顯著，就坦然呈現這份負結果，不把巧合包裝成預測神話。",
             ],
           ]}
         />
       </section>
       <section className="section-shell content-section">
-        <Callout tone="warning" title="最重要的研究結論">
+        <Callout tone="warning" title="實驗總結：當複雜模型遇上簡單統計">
           <p>
             {conclusion.comparison}
             {conclusion.ciSummary} {conclusion.baselineComparison} {conclusion.verdict}
-            完整結果與限制可在
+            完整實驗數據與方法限制，皆可於
             <RepoLink path="docs/model-card.md">模型卡</RepoLink>
             交叉核對。
           </p>

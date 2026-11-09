@@ -28,28 +28,27 @@ function AreaResult({
       <p className="eyebrow">{name}</p>
       <h2>{modelLabel(data.selection.model)}</h2>
       <p className="muted">
-        {featureLabel(data.selection.feature_set)} feature set（使用的線索組合）·{" "}
-        {seedCount}-seed ensemble（{seedCount} 次不同隨機起點的綜合結果）
+        {featureLabel(data.selection.feature_set)} · {seedCount} 組隨機起點集成（{seedCount}-seed Ensemble）
       </p>
       <div className="result-metrics">
         <Metric
           value={modelHits}
-          label="Model hits｜模型"
-          note={`每期平均命中 ${modelHits} 個`}
+          label="Model hits｜模型選號"
+          note={`每期平均對中 ${modelHits} 顆`}
         />
         <Metric
           value={uniformHits}
-          label="Uniform hits｜隨機選號"
-          note={`每期平均命中 ${uniformHits} 個`}
+          label="Uniform hits｜隨機期望值"
+          note={`每期理論期望 ${uniformHits} 顆`}
         />
         <Metric
           value={rollingHits}
-          label="Historical hits｜歷史累積頻率"
-          note={`每期平均命中 ${rollingHits} 個`}
+          label="Historical hits｜歷史常開基準"
+          note={`每期平均對中 ${rollingHits} 顆`}
         />
       </div>
       <div className="ci">
-        <span>Δ hits vs Uniform｜模型比隨機選號多中的數量</span>
+        <span>Δ hits vs Uniform｜模型相對隨機選號的命中差距</span>
         <strong>
           {ci.estimate > 0 ? "+" : ""}
           {num(ci.estimate)}
@@ -66,7 +65,7 @@ function AreaResult({
           />
         </div>
         <small>
-          95% CI（可能範圍）[{num(ci.lower)}, {num(ci.upper)}]
+          95% 信賴區間 [{num(ci.lower)}, {num(ci.upper)}]
         </small>
         <p className="ci-explanation">{ciExplanation(verdict)}</p>
       </div>
@@ -102,16 +101,16 @@ export default function EvaluationPage() {
   return (
     <div className="section-shell page">
       <PageIntro
-        eyebrow={`LOCKED HOLDOUT · ${facts.holdoutStartYear}+ · 最終保留測試`}
-        title="像正式考試一樣，只看一次的最終評估"
+        eyebrow={`LOCKED HOLDOUT · ${facts.holdoutStartYear}+ ｜ 封存盲測驗收`}
+        title="像正式大考一樣，定案後只開箱一次的總驗收"
       >
         <p>
-          模型與 feature set（使用哪些線索）先在 development artifact（開發階段結果檔）中選定，再用
+          模型架構與特徵組合先在開發階段選定，並以
           <RepoLink path="configs/experiments/selection-v1.json">
-            SHA-256 指紋鎖住
+            SHA-256 數位指紋寫入設定檔鎖死
           </RepoLink>
-          。{facts.holdoutStartYear} 年後共 {holdout.holdout_draw_count} 期是 locked
-          holdout：它們完全不參與 fitting（訓練）、tuning（調整參數）或選型，直到所有決定完成後才一次打開驗收。
+          。{facts.holdoutStartYear} 年後的 {holdout.holdout_draw_count} 期開獎資料屬於封存盲測集（Locked
+          Holdout）：在特徵設計、調參與選型過程中完全隔離，直到所有決策定案後才一次開箱計分。
         </p>
       </PageIntro>
 
@@ -129,44 +128,43 @@ export default function EvaluationPage() {
       </div>
 
       <p className="muted text-sm">
-        註：artifact 中的 baseline key 為 <code>rolling_frequency</code>（v1 舊名），實際算法依歷史累積出現率排序。
+        註：結果檔中的基準欄位鍵值沿用 v1 命名 <code>rolling_frequency</code>，實際演算法為依歷史累積出現率排序（Historical Frequency）。
       </p>
 
-      <Callout tone="warning" title="點估計比較高，不代表已證明有效">
+      <Callout tone="warning" title="帳面平均值略高，不等於證明模型有效">
         <p>
           {evalCallout.pointComparison}但
           <RepoLink path="artifacts/experiments/holdout-v1.1.json">
-            {facts.bootstrapResamples.toLocaleString()} 次 paired draw bootstrap 與完整 holdout 結果
+            {facts.bootstrapResamples.toLocaleString()} 次 Paired Bootstrap 抽樣與完整盲測結果
           </RepoLink>
           {evalCallout.ciSummary} {evalCallout.baselineComparison} {evalCallout.decisionRule}
         </p>
       </Callout>
 
-      <Callout tone="neutral" title="v1.1 勘誤紀錄：修正 Uniform 比較基準的同分排序偏差">
+      <Callout tone="neutral" title="v1.1 勘誤紀錄：修正隨機選號基準的同分排序偏差">
         <p>
           在初版{" "}
           <RepoLink path="artifacts/experiments/holdout-v1.json">
             holdout-v1.json
           </RepoLink>{" "}
           中，<code>predict_uniform</code>{" "}
-          對所有號碼給出相同機率，經固定排序規則後退化為每期固定選擇同一組號碼（第一區 0.872、第二區 0.106），低於真正的隨機期望值（第一區 36/38 ≈ 0.947、第二區 1/8 = 0.125）。
+          對所有號碼給出相同機率，經固定同分排序規則後，退化為每期固定挑選前幾號（第一區平均對中 0.872 顆、第二區 0.106 顆），低於真正的隨機選號數學期望值（第一區 36/38 ≈ 0.947、第二區 1/8 = 0.125）。更新版{" "}
           <RepoLink path="artifacts/experiments/holdout-v1.1.json">
             holdout-v1.1.json
           </RepoLink>{" "}
-          在不重訓模型的情況下改以解析期望值作為基準，模型與隨機選號的差距進一步縮小，95% CI 依然跨越 0。
+          在不重訓模型的前提下，改以解析期望值作為比較基準；修正後模型與隨機選號的帳面差距進一步縮小，兩區 95% 信賴區間依然跨越 0。
         </p>
       </Callout>
 
       <section className="content-section">
         <h2>
           <RepoLink path="src/lottery_ml/evaluation/metrics.py">
-            為什麼還看 Brier score 與 Log loss？
+            為什麼除了命中數，還要看 Brier Score 與 Log Loss？
           </RepoLink>
         </h2>
         <p className="body-copy">
-          Average hits（平均命中數）只看最後選出的號碼有沒有中；Brier score 與 Log
-          loss
-          則檢查模型給出的機率是否合理，而且兩者都是越低越好。舉例來說，模型若對錯誤號碼給出非常高的信心，就會受到更重的扣分。這能避免只因偶然多中幾個號碼，就誤以為模型的機率判斷可信。
+          平均命中數（Average Hits）只看最後挑出的那幾顆球有沒有中；Brier Score 與 Log Loss
+          則進一步檢驗模型輸出的「預測機率」是否誠實反映真實不確定性（兩者皆越低越好）。舉例來說，如果模型對某個號碼給出極高信心卻沒開出，就會在 Log Loss 上受到重罰。同時觀察這兩項指標，能避免模型只是碰巧押中幾顆球，機率估計卻完全失準。
         </p>
       </section>
     </div>

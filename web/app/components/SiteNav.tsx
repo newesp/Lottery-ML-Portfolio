@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 const links = [
-  ["/", "總覽"], ["/data", "資料"], ["/features", "特徵工程"],
-  ["/experiments", "實驗室"], ["/evaluation", "最終評估"],
+  ["/", "專案總覽"], ["/data", "開獎資料"], ["/features", "特徵工程"],
+  ["/experiments", "互動實驗室"], ["/evaluation", "盲測驗收"],
   ["/forward", "前瞻盲測"],
-  ["/findings", "結論與限制"], ["/reproducibility", "重現方法"],
+  ["/findings", "結論與限制"], ["/reproducibility", "重現步驟"],
 ] as const;
 
 export function SiteNav() {

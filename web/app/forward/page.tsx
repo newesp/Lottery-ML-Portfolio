@@ -5,7 +5,7 @@ import { num } from "../lib/format";
 
 export const metadata = {
   title: "前瞻盲測",
-  description: "在開獎前記錄模型預測，開獎後依據不可改寫的帳本計算命中數。",
+  description: "在開獎前預先寫入模型預測，開獎後依據不可竄改的帳本自動結算命中數。",
 };
 
 export default function ForwardPage() {
@@ -15,16 +15,16 @@ export default function ForwardPage() {
     return (
       <div className="page section-shell">
         <PageIntro
-          eyebrow="FORWARD TEST · 前瞻盲測"
-          title="在開獎前寫下預測，開獎後才計分"
+          eyebrow="FORWARD TEST ｜ 前瞻盲測"
+          title="開獎前鎖定預測，開獎後才對答案"
         >
           <p>
-            本專案將機器學習模型在尚未開獎時的預測，鎖定於公開且只增不減的帳本（ledger.jsonl），並在開獎後自動結算真實盲測成績。
+            這套機制會在尚未開獎前，將機器學習模型的選號寫入公開且只增不減的帳本（<code>ledger.jsonl</code>），待開獎結果公布後再自動結算真實盲測成績。
           </p>
         </PageIntro>
-        <Callout tone="warning" title="前瞻盲測尚未啟動">
+        <Callout tone="warning" title="前瞻盲測尚未產生紀錄">
           <p>
-            目前尚未偵測到前瞻盲測資料（<code>artifacts/forward/summary.json</code>）。當排程完成第一次預測後，此處將自動呈現最新預測號碼與盲測紀錄。
+            目前尚未讀取到前瞻盲測彙整檔（<code>artifacts/forward/summary.json</code>）。待排程完成首次開獎前預測後，此頁面將自動呈現最新選號與核對紀錄。
           </p>
         </Callout>
       </div>
@@ -36,32 +36,32 @@ export default function ForwardPage() {
   return (
     <div className="page section-shell">
       <PageIntro
-        eyebrow="FORWARD TEST · 前瞻盲測"
-        title="在開獎前寫下預測，開獎後才計分"
+        eyebrow="FORWARD TEST ｜ 前瞻盲測"
+        title="開獎前鎖定預測，開獎後才對答案"
       >
         <p>
-          為徹底消除後見之明與資料洩漏疑慮，本頁面所有預測均在開獎當天 20:00 前由自動化流程計算並鎖定至公開帳本，開獎後再依據同一份帳本結算命中成績。
+          為了徹底排除「事後諸葛」與資料洩漏的可能，此頁面的所有預測皆在開獎當晚 20:00 前由自動化排程算好並寫入公開帳本，開獎後再依據同一份帳本對獎結算。
         </p>
         <p style={{ marginTop: "12px", fontSize: "0.85rem", color: "var(--muted)" }}>
-          原始預測紀錄請見 <RepoLink path="artifacts/forward/ledger.jsonl">artifacts/forward/ledger.jsonl</RepoLink>（不可修改的 append-only 帳本）。
+          原始預測紀錄存放於 <RepoLink path="artifacts/forward/ledger.jsonl">artifacts/forward/ledger.jsonl</RepoLink>（只增不減的 Append-only 帳本）。
         </p>
       </PageIntro>
 
       {/* 下一期預測 */}
       <section className="content-section">
         <div className="section-heading">
-          <Eyebrow>NEXT DRAW PREDICTION · 下一期盲測號碼</Eyebrow>
+          <Eyebrow>NEXT DRAW PREDICTION ｜ 下一期盲測選號</Eyebrow>
           <h2>{latest_pending ? `目標開獎日：${latest_pending.assumed_target_date}` : "目前尚無待開獎的預測"}</h2>
         </div>
 
         {latest_pending ? (
           <div className="lab" style={{ background: "white", padding: "30px" }}>
             <p className="muted" style={{ margin: "0 0 20px" }}>
-              依據截至 {latest_pending.cutoff_draw_id} 的全部已驗證歷史開獎資料，模型在開獎前鎖定的推薦組合：
+              依據截至 {latest_pending.cutoff_draw_id} 的已驗證歷史資料，模型在開獎前預先鎖定的選號組合：
             </p>
 
             <div className="forward-row">
-              <span className="forward-row-label">模型推薦（selection-v1 RF ensemble）</span>
+              <span className="forward-row-label">模型選號（selection-v1 RF Ensemble）</span>
               <div className="ball-group">
                 {latest_pending.predictions.model.area1.picks.map((n) => (
                   <NumberBall key={n} number={n} area="area1" size="lg" />
@@ -72,7 +72,7 @@ export default function ForwardPage() {
             </div>
 
             <div className="forward-row" style={{ marginTop: "20px" }}>
-              <span className="forward-row-label">歷史累積頻率 baseline</span>
+              <span className="forward-row-label">歷史累積頻率基準（Historical Frequency）</span>
               <div className="ball-group">
                 {latest_pending.predictions.historical_frequency.area1.picks.map((n) => (
                   <NumberBall key={n} number={n} area="area1" size="md" />
@@ -88,7 +88,7 @@ export default function ForwardPage() {
           </div>
         ) : (
           <p className="muted">
-            上一期預測已開獎結算，下次預測將於開獎資料更新時自動建立並鎖定。
+            上一期預測已完成對獎結算，下一期預測將於開獎資料更新時自動產生並寫入帳本。
           </p>
         )}
       </section>
@@ -96,8 +96,8 @@ export default function ForwardPage() {
       {/* 累積成績 */}
       <section className="content-section">
         <div className="section-heading">
-          <Eyebrow>CUMULATIVE PERFORMANCE · 累積盲測成績</Eyebrow>
-          <h2>在全新未見資料上的真實表現</h2>
+          <Eyebrow>CUMULATIVE PERFORMANCE ｜ 累積盲測表現</Eyebrow>
+          <h2>面對未來未知期數的實際成績單</h2>
         </div>
 
         <div className="metrics-grid compact">
@@ -124,9 +124,9 @@ export default function ForwardPage() {
         </div>
 
         {aggregate.resolved_count < 30 && (
-          <Callout tone="warning" title="統計推論限制">
+          <Callout tone="warning" title="小樣本統計提醒">
             <p>
-              目前已結算期數為 {aggregate.resolved_count} 期（未滿 30 期）。在小樣本下，平均命中數受單次開獎隨機波動影響極大，暫不進行統計檢定或推論。
+              目前已結算期數為 {aggregate.resolved_count} 期（未滿 30 期）。在期數尚少時，平均命中數極易受單期手氣波動影響，暫不適合做統計顯著性推論。
             </p>
           </Callout>
         )}
@@ -136,8 +136,8 @@ export default function ForwardPage() {
       {latest_pending && latest_pending.predictions.model.area1.top_scores.length > 0 && (
         <section className="content-section">
           <div className="section-heading">
-            <Eyebrow>PROBABILITY RANKING · 第一區模型機率 Top 10</Eyebrow>
-            <h2>當期評分最高的號碼</h2>
+            <Eyebrow>PROBABILITY RANKING ｜ 第一區預測機率 Top 10</Eyebrow>
+            <h2>模型當期評分最高的前十個號碼</h2>
           </div>
           <div className="table-scroll">
             <table>
@@ -161,9 +161,9 @@ export default function ForwardPage() {
                       <td><code>{num(score, 6)}</code></td>
                       <td>
                         {isPicked ? (
-                          <span style={{ fontWeight: 800, color: "#168e8a" }}>★ 推薦選號 (Top 6)</span>
+                          <span style={{ fontWeight: 800, color: "#168e8a" }}>★ 當期選號（Top 6）</span>
                         ) : (
-                          <span className="muted">候選</span>
+                          <span className="muted">備選候選碼</span>
                         )}
                       </td>
                     </tr>
@@ -178,8 +178,8 @@ export default function ForwardPage() {
       {/* 歷史盲測紀錄表 */}
       <section className="content-section">
         <div className="section-heading">
-          <Eyebrow>AUDIT LOG · 盲測審計紀錄表</Eyebrow>
-          <h2>每期預測與實際開獎核對</h2>
+          <Eyebrow>AUDIT LOG ｜ 盲測對獎紀錄表</Eyebrow>
+          <h2>逐期預測與實際開獎結果核對</h2>
         </div>
 
         {entries.length === 0 ? (
@@ -313,9 +313,9 @@ export default function ForwardPage() {
 
       {/* 免責聲明 */}
       <section className="content-section">
-        <Callout tone="warning" title="免責聲明與研究定位">
+        <Callout tone="warning" title="研究定位與免責聲明">
           <p>
-            彩券開獎為嚴格獨立隨機試驗，每次開獎均不受過去歷史出現頻率影響。本專案的前瞻盲測機制僅用於學術研究與驗證統計學習模型在面對真隨機序列時的行為邊界，絕非提供明牌，切勿將任何預測內容作為彩券投注之依據。
+            彩券開獎為嚴格的獨立隨機事件，過往的出現頻率不會改變下一期的開獎機率。前瞻盲測機制僅用於觀察統計學習模型在面對真實隨機序列時的長期行為，絕非報明牌，請勿將任何預測內容作為投注依據。
           </p>
         </Callout>
       </section>

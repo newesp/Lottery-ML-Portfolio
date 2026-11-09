@@ -4,28 +4,28 @@ import { Callout, PageIntro, RepoLink } from "../components/UI";
 const findings: Array<[string, string, ReactNode]> = [
   [
     "01",
-    "正確的 split（資料切法）比複雜模型更重要",
-    "如果隨機打散所有資料再分成訓練與測試，模型可能間接看到未來資訊。Expanding-window（逐年擴大的訓練窗口）則永遠只拿過去預測下一年，更接近真實使用情境。",
+    "資料怎麼切，比模型有多複雜更重要",
+    "如果把所有歷史期數隨機打散再切分訓練與測試集，模型很容易從跨期特徵中偷看到未來的分布。採用 Expanding-window（逐年向外擴展的訓練視窗）堅持只拿過去預測下一年，才能真實反映模型面對未知未來的表現。",
   ],
   [
     "02",
-    "Baseline（簡單比較基準）也是結論的一部分",
+    "簡單基準（Baseline）是最好的試金石",
     <>
       <RepoLink path="src/lottery_ml/models/baselines.py">
         Uniform、Historical Frequency 與 Shuffled History
       </RepoLink>
-      分別代表完全隨機選號、依過去所有期數的累積出現率排序，以及把歷史關係打亂。若複雜模型連這些簡單方法都無法穩定超越，就不能宣稱它學到可靠規律。
+      分別代表完全隨機選號、依歷史累積出現率排序，以及將歷史時間順序打亂。當複雜的機器學習模型連這些樸素的統計基準都無法穩定超越時，最合理的解釋就是資料裡並不存在可供模型發揮的複雜規律。
     </>,
   ],
   [
     "03",
-    "負結果也能展示 ML 能力",
-    "沒有預測優勢不等於專案失敗。資料 lineage（來源追蹤）、leakage tests（防偷看答案測試）、selection freeze（先鎖定選擇）、paired bootstrap（估計差距的不確定性）與 reproducibility（可重現性），都能證明實驗是否可信。",
+    "「沒有發現預測優勢」也是完整的工程交付",
+    "實驗得出負結果，不等於工程失敗。從資料溯源（Lineage）、防洩漏測試（Leakage Tests）、選型鎖定（Selection Freeze）、成對抽樣信賴區間（Paired Bootstrap）到完全可重現的自動化管線，每個環節都在確保最後的結論——無論正負——都站得住腳。",
   ],
   [
     "04",
-    "Lottery（彩票）是有意識選擇的反例",
-    "開獎本來就應該接近隨機，因此這個專案的任務是辨認「沒有穩定 signal（可預測訊號）」，而不是一直調整模型，直到碰巧找到一個看起來漂亮的分數。",
+    "為什麼刻意選擇「威力彩」這個反例？",
+    "多數作品集喜歡挑選容易刷出高分的公開資料集；本專案反其道而行，選擇理論上近乎純隨機的威力彩。面對沒有穩定訊號（Signal）的題目，考驗的正是能否克制「不斷調參直到湊出漂亮數字」的誘惑，誠實讓數據說話。",
   ],
 ];
 
@@ -33,13 +33,11 @@ export default function FindingsPage() {
   return (
     <div className="section-shell page">
       <PageIntro
-        eyebrow="FINDINGS & LIMITATIONS · 結論與限制"
-        title="最成熟的結論，是知道不能宣稱什麼"
+        eyebrow="FINDINGS & LIMITATIONS ｜ 結論與方法限制"
+        title="負結果的價值，在於誠實劃出能力的邊界"
       >
         <p>
-          這個 case study（案例研究）不把隨機波動包裝成
-          alpha（可持續的預測優勢）。相反地，它刻意設計成一個會挑戰、甚至反駁自己假設的
-          ML 實驗。
+          這份案例研究不打算把隨機波動包裝成可持續的預測優勢（Alpha）。相反地，它透過嚴格的實驗設計來挑戰、甚至推翻模型自己的假設——在隨機性主導的題目裡，能夠清楚證明「模型沒有學到特殊規律」，本身就是工程嚴謹度的最佳展現。
         </p>
       </PageIntro>
       <div className="finding-list">
@@ -53,10 +51,10 @@ export default function FindingsPage() {
           </article>
         ))}
       </div>
-      <Callout tone="warning" title="不適用範圍">
+      <Callout tone="warning" title="使用邊界與研究限制">
         <p>
-          本專案不是投注建議、不估算期望報酬，也不聲稱「最近常出現」會提高下一期機率。每期開獎應視為獨立的隨機事件。資料來源也不是台灣彩券官方
-          API（程式化資料服務），所以專案特別保留原始來源、修正原因與驗證紀錄。
+          本專案純粹為機器學習工程與統計驗證之技術展示，不提供任何投注建議，亦不估算期望報酬，更不宣稱「近期常開號碼」會提高下期中獎率。每期彩券開獎均應視為獨立隨機事件。此外，歷史資料取自民間整理之公開網頁而非官方
+          API，因此管線內建了嚴格的格式驗證、雜湊存證與人工勘誤紀錄，確保資料品質透明可查。
         </p>
       </Callout>
     </div>

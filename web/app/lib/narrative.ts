@@ -9,11 +9,11 @@ export function ciVerdict(lower: number, upper: number): CIVerdict {
 export function ciExplanation(verdict: CIVerdict): string {
   switch (verdict) {
     case "above_zero":
-      return "整個區間高於 0，有統計證據顯示表現優於隨機選號；但仍須檢驗提升幅度是否具有實際價值。";
+      return "信賴區間完整落在 0 以上，具備優於隨機選號的統計證據；至於這點差距是否具備實質應用價值，仍須視提升幅度而定。";
     case "below_zero":
-      return "整個區間低於 0，有統計證據顯示表現劣於隨機選號。";
+      return "信賴區間完整落在 0 以下，顯示模型表現反而不如隨機選號。";
     case "crosses_zero":
-      return "區間跨過 0，表示真實差距可能是正、也可能是負；目前不能排除模型其實沒有勝過隨機選號。";
+      return "信賴區間跨越 0，代表真實差距可能是正、也可能是負；在統計上無法排除只是單純的抽樣波動。";
   }
 }
 
@@ -25,11 +25,11 @@ export function compareLabel(a: number, b: number, eps = 1e-6): "高於" | "低�
 export function heroCiTag(verdict: CIVerdict): { title: string; subtitle: string } {
   switch (verdict) {
     case "above_zero":
-      return { title: "95% CI 高於 0", subtitle: "統計顯著優於隨機期望值" };
+      return { title: "95% CI 高於 0", subtitle: "具備優於隨機期望值的統計證據" };
     case "below_zero":
-      return { title: "95% CI 低於 0", subtitle: "表現統計顯著劣於隨機期望值" };
+      return { title: "95% CI 低於 0", subtitle: "表現顯著低於隨機期望值" };
     case "crosses_zero":
-      return { title: "95% CI 跨越 0", subtitle: "模型與隨機選號的差距，可能只是運氣" };
+      return { title: "95% CI 跨越 0", subtitle: "與隨機選號的微幅差距，統計上可能純屬巧合" };
   }
 }
 
@@ -55,11 +55,11 @@ export function buildHomeConclusion(
 
   let comparison = "";
   if (c1 === "高於" && c2 === "高於") {
-    comparison = "在最後才打開的 holdout 測試中，模型的平均命中數看起來比 Uniform（完全隨機選號）高；";
+    comparison = "在封存至最後才開箱的盲測（Holdout）中，模型的帳面平均命中數雖然略高於隨機選號的理論期望值；";
   } else if (c1 === "高於") {
-    comparison = `在最後才打開的 holdout 測試中，第一區模型平均命中數高於 Uniform（完全隨機選號），第二區${c2} Uniform；`;
+    comparison = `在封存盲測（Holdout）中，第一區模型的平均命中數略高於隨機期望值，第二區則${c2}隨機期望值；`;
   } else {
-    comparison = `在最後才打開的 holdout 測試中，模型在第一區${c1}、第二區${c2} Uniform（完全隨機選號）；`;
+    comparison = `在封存盲測（Holdout）中，模型在第一區${c1}、第二區${c2}隨機選號的理論期望值；`;
   }
 
   const v1 = ciVerdict(area1.ciLower, area1.ciUpper);
@@ -67,13 +67,13 @@ export function buildHomeConclusion(
 
   let ciSummary = "";
   if (v1 === "crosses_zero" && v2 === "crosses_zero") {
-    ciSummary = "但 paired bootstrap 95% CI 跨越 0，代表這個差距仍可能只是抽樣運氣。";
+    ciSummary = "但經過 Paired Bootstrap 抽樣檢驗，兩區的 95% 信賴區間皆跨越 0，意味著這點微幅領先很可能只是抽樣波動帶來的巧合。";
   } else if (v1 === "above_zero" && v2 === "above_zero") {
-    ciSummary = "且 paired bootstrap 95% CI 兩區皆高於 0，具有統計顯著優勢。";
+    ciSummary = "且 Paired Bootstrap 95% 信賴區間於兩區皆高於 0，顯示出統計上的正向差距。";
   } else {
     const textV1 = v1 === "crosses_zero" ? "跨越 0" : v1 === "above_zero" ? "高於 0" : "低於 0";
     const textV2 = v2 === "crosses_zero" ? "跨越 0" : v2 === "above_zero" ? "高於 0" : "低於 0";
-    ciSummary = `但 paired bootstrap 95% CI 顯示第一區${textV1}、第二區${textV2}。`;
+    ciSummary = `但 Paired Bootstrap 95% 信賴區間在第一區${textV1}、第二區${textV2}。`;
   }
 
   const freq1 = area1.frequencyHits > area1.modelHits;
@@ -81,19 +81,19 @@ export function buildHomeConclusion(
 
   let baselineComparison = "";
   if (freq1 && freq2) {
-    baselineComparison = "更簡單的 Historical Frequency（依過去所有期數的累積出現率排序）甚至略高於模型。";
+    baselineComparison = "更耐人尋味的是，完全不靠機器學習、單純挑歷史常開號碼的基準方法（Historical Frequency），表現反而還微幅領先模型。";
   } else if (freq1) {
-    baselineComparison = "更簡單的 Historical Frequency（依過去所有期數的累積出現率排序）在第一區甚至略高於模型。";
+    baselineComparison = "更耐人尋味的是，單純挑歷史常開號碼的基準方法（Historical Frequency），在第一區反而微幅領先模型。";
   } else if (freq2) {
-    baselineComparison = "更簡單的 Historical Frequency（依過去所有期數的累積出現率排序）在第二區甚至略高於模型。";
+    baselineComparison = "更耐人尋味的是，單純挑歷史常開號碼的基準方法（Historical Frequency），在第二區反而微幅領先模型。";
   } else {
-    baselineComparison = "Historical Frequency（依過去所有期數的累積出現率排序）表現與模型相近。";
+    baselineComparison = "單純挑歷史常開號碼的基準方法（Historical Frequency）表現亦與模型相去不遠。";
   }
 
   const verdict =
     v1 === "crosses_zero" || v2 === "crosses_zero" || v1 === "below_zero" || v2 === "below_zero"
-      ? "因此目前沒有證據能說模型穩定勝過隨機選號；"
-      : "模型在統計檢驗中展現預測優勢；";
+      ? "在現有資料與實驗設計下，沒有證據顯示模型能穩定超越隨機選號；"
+      : "模型在本次實驗設定中呈現統計差異；";
 
   return { comparison, ciSummary, baselineComparison, verdict };
 }
@@ -112,11 +112,11 @@ export function buildEvaluationCallout(
 
   let pointComparison = "";
   if (c1 === "高於" && c2 === "高於") {
-    pointComparison = "兩區模型的單一平均值（point estimate）都比 Uniform 隨機選號高，";
+    pointComparison = "單看帳面上的點估計（Point Estimate），兩區模型的平均命中數都比隨機選號高出一點點，";
   } else if (c1 === "高於") {
-    pointComparison = `第一區模型的單一平均值（point estimate）高於 Uniform 隨機選號，第二區${c2} Uniform，`;
+    pointComparison = `單看帳面上的點估計，第一區模型略高於隨機選號，第二區則${c2}隨機選號，`;
   } else {
-    pointComparison = `第一區模型單一平均值${c1}、第二區${c2} Uniform 隨機選號，`;
+    pointComparison = `單看帳面上的點估計，第一區模型${c1}、第二區${c2}隨機選號，`;
   }
 
   const v1 = ciVerdict(area1.ciLower, area1.ciUpper);
@@ -124,13 +124,13 @@ export function buildEvaluationCallout(
 
   let ciSummary = "";
   if (v1 === "crosses_zero" && v2 === "crosses_zero") {
-    ciSummary = "顯示 95% CI 都跨越 0。";
+    ciSummary = "顯示兩區的 95% 信賴區間皆跨越 0。";
   } else if (v1 === "above_zero" && v2 === "above_zero") {
-    ciSummary = "顯示 95% CI 都高於 0。";
+    ciSummary = "顯示兩區的 95% 信賴區間皆高於 0。";
   } else {
     const textV1 = v1 === "crosses_zero" ? "跨越 0" : v1 === "above_zero" ? "高於 0" : "低於 0";
     const textV2 = v2 === "crosses_zero" ? "跨越 0" : v2 === "above_zero" ? "高於 0" : "低於 0";
-    ciSummary = `顯示第一區 95% CI ${textV1}、第二區 ${textV2}。`;
+    ciSummary = `顯示第一區 95% 信賴區間${textV1}、第二區${textV2}。`;
   }
 
   const freq1 = area1.frequencyHits > area1.modelHits;
@@ -139,20 +139,20 @@ export function buildEvaluationCallout(
   let baselineComparison = "";
   if (freq1 && freq2) {
     baselineComparison =
-      "同時，簡單的 Historical Frequency baseline（依過去所有期數的累積出現率排序）在兩區還略高於模型。";
+      "與此同時，只按歷史累積出現率排序的簡單基準（Historical Frequency），在兩區的命中表現甚至還略勝一籌。";
   } else if (freq1) {
     baselineComparison =
-      "同時，簡單的 Historical Frequency baseline（依過去所有期數的累積出現率排序）在第一區還略高於模型。";
+      "與此同時，只按歷史累積出現率排序的簡單基準（Historical Frequency），在第一區甚至略勝一籌。";
   } else if (freq2) {
     baselineComparison =
-      "同時，簡單的 Historical Frequency baseline（依過去所有期數的累積出現率排序）在第二區還略高於模型。";
+      "與此同時，只按歷史累積出現率排序的簡單基準（Historical Frequency），在第二區甚至略勝一籌。";
   } else {
     baselineComparison =
-      "同時，簡單的 Historical Frequency baseline（依過去所有期數的累積出現率排序）表現與模型相當。";
+      "與此同時，只按歷史累積出現率排序的簡單基準（Historical Frequency）表現也與模型相當。";
   }
 
   const decisionRule =
-    "判讀規則是：整個區間高於 0 才有統計證據較好；整個區間低於 0 代表較差；跨過 0 則無法確認。即使區間都高於 0，也還要看提升幅度是否大到具有實際價值。";
+    "統計判讀的原則很單純：信賴區間必須完整落在 0 以上，才能支持模型表現優於隨機；若跨越 0，就代表現有證據不足以排除運氣成分。";
 
   return { pointComparison, ciSummary, baselineComparison, decisionRule };
 }

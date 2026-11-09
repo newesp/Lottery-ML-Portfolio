@@ -67,7 +67,7 @@ export function ExperimentLab({ runs }: { runs: Run[] }) {
           </select>
         </label>
         <label>
-          Feature set｜線索組合
+          Feature set｜特徵組合
           <select value={feature} onChange={(e) => setFeature(e.target.value)}>
             <option value="all">全部模型與基準方法</option>
             {Object.entries(FEATURE_NAMES).map(([value, label]) => (
@@ -79,7 +79,7 @@ export function ExperimentLab({ runs }: { runs: Run[] }) {
         </label>
       </div>
       <div className="lab-summary">
-        <span>目前數值最佳的實驗</span>
+        <span>開發期帳面表現最佳</span>
         <strong>{MODEL_NAMES[best.model] ?? best.model}</strong>
         <small>
           {areaLabel(area)} ·{" "}
@@ -89,7 +89,7 @@ export function ExperimentLab({ runs }: { runs: Run[] }) {
       </div>
       <p className="lab-help">
         <b>{METRIC_NAMES[metric]}：</b>
-        {METRIC_HELP[metric]} 這裡的「最佳」只代表開發期平均數值最好，是否能用於未來仍要看 locked holdout 最終測試。
+        {METRIC_HELP[metric]} 這裡的「最佳」僅代表開發期時間驗證的平均分數最高；能否通過真實考驗，仍須視最終封存盲測（Locked Holdout）的表現而定。
       </p>
       <div
         className="bar-chart"
@@ -115,18 +115,18 @@ export function ExperimentLab({ runs }: { runs: Run[] }) {
         ))}
       </div>
       <details className="data-table">
-        <summary>顯示完整數字表格與欄位說明</summary>
+        <summary>展開完整數據表格與欄位說明</summary>
         <p className="body-copy">
-          Mean 是所有時間測試輪次的平均；Fold SD 是各輪結果的波動程度，越大代表不同年份表現越不穩定。
+          Mean 代表各年度驗證輪次的平均成績；Fold SD（標準差）則反映不同年份之間的表現波動，數值越大代表跨年度表現越不穩定。
         </p>
         <div className="table-scroll">
           <table>
             <thead>
               <tr>
-                <th>Model｜模型</th>
-                <th>Feature set｜線索組合</th>
-                <th>Mean｜平均</th>
-                <th>Fold SD｜各輪波動</th>
+                <th>Model｜模型與基準</th>
+                <th>Feature set｜特徵組合</th>
+                <th>Mean｜各輪平均</th>
+                <th>Fold SD｜跨年波動</th>
               </tr>
             </thead>
             <tbody>

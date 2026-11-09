@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lottery ML Lab｜台灣威力彩機器學習實測（speak-human-tw 改寫版 Mockup）</title>
+  <style>
+    :root {
+      --ink: #0c1720;
+      --navy: #102431;
+      --paper: #f4f1e9;
+      --white: #fff;
+      --cyan: #35d6cf;
+      --lime: #c7f36b;
+      --orange: #ff9a62;
+      --line: #cdd4d2;
+      --muted: #617078;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.7;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* Mock Preview Control Toolbar */
+    .mock-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+      font-size: 0.86rem;
+      border-bottom: 2px solid var(--cyan);
+    }
+    .mock-toolbar .badge {
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: var(--cyan);
+      font-weight: 700;
+    }
+    .mode-switch-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .mode-btn {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #475569;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-btn:hover { background: #334155; }
+    .mode-btn.active {
+      background: var(--cyan);
+      color: var(--navy);
+      border-color: var(--cyan);
+    }
+
+    /* Site Navigation */
+    .site-header {
+      position: relative;
+      background: rgba(244, 241, 233, 0.98);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+    .nav-shell {
+      max-width: var(--max);
+      margin: auto;
+      min-height: 72px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      background: var(--navy);
+      color: var(--cyan);
+      font-weight: 900;
+      border-radius: 3px;
+    }
+    .brand b { color: #168e8a; }
+    .site-header nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+    }
+    .site-header nav a {
+      font-size: 0.84rem;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .site-header nav a:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: #168e8a;
+    }
+
+    /* Layout & Containers */
+    .section-shell {
+      max-width: var(--max);
+      margin-inline: auto;
+      padding-inline: 24px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.4fr 0.85fr;
+      gap: 56px;
+      align-items: center;
+      min-height: 560px;
+      padding-top: 60px;
+      padding-bottom: 70px;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      font-size: 0.76rem;
+      letter-spacing: 0.15em;
+      font-weight: 900;
+      color: #177c79;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      margin: 0;
+      max-width: 900px;
+      line-height: 1.15;
+      letter-spacing: -0.035em;
+      font-size: clamp(2.3rem, 4vw, 3.6rem);
+      font-weight: 900;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: #168e8a;
+      display: block;
+      margin-top: 4px;
+    }
+    .hero-copy {
+      font-size: 1.06rem;
+      color: #334155;
+      max-width: 740px;
+      margin: 24px 0 28px;
+      line-height: 1.75;
+    }
+    .hero-copy p { margin: 0 0 14px; }
+    .hero-copy p:last-child { margin-bottom: 0; }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .button {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 22px;
+      font-weight: 800;
+      border: 1px solid var(--navy);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .button.primary {
+      background: var(--navy);
+      color: white;
+    }
+    .button.secondary {
+      background: transparent;
+      color: var(--navy);
+    }
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    /* Hero Panel */
+    .hero-panel {
+      background: var(--navy);
+      color: white;
+      padding: 32px 30px;
+      box-shadow: 10px 10px 0 var(--cyan);
+      border-radius: 2px;
+    }
+    .status {
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status i {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--lime);
+    }
+    .hero-number-wrap {
+      margin: 28px 0 16px;
+    }
+    .hero-number {
+      font-size: 4.8rem;
+      font-weight: 900;
+      line-height: 0.95;
+      color: white;
+      letter-spacing: -0.04em;
+    }
+    .hero-number-unit {
+      font-size: 1.1rem;
+      color: var(--cyan);
+      font-weight: 700;
+      margin-left: 4px;
+    }
+    .hero-panel-lead {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+      color: #e2e8f0;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .hero-meaning {
+      display: block;
+      margin: 0 0 24px;
+      color: #94a3b8;
+      font-size: 0.83rem;
+      line-height: 1.55;
+      border-left: 2px solid #334155;
+      padding-left: 10px;
+    }
+    .mini-compare {
+      border-top: 1px solid #334155;
+      padding-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      font-size: 0.8rem;
+    }
+    .mini-compare span {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mini-compare b {
+      color: var(--cyan);
+      font-size: 0.88rem;
+    }
+    .mini-compare small {
+      color: #94a3b8;
+      line-height: 1.45;
+    }
+
+    /* Metrics Band */
+    .metrics-band {
+      background: var(--navy);
+      color: white;
+      border-top: 1px solid #1e293b;
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .metric {
+      padding: 28px 24px;
+      border-right: 1px solid #243542;
+      display: flex;
+      flex-direction: column;
+    }
+    .metric:first-child { padding-left: 0; }
+    .metric:last-child { border-right: none; }
+    .metric strong {
+      font-size: 2.1rem;
+      line-height: 1.1;
+      color: var(--cyan);
+      font-weight: 900;
+    }
+    .metric span {
+      font-size: 0.86rem;
+      font-weight: 800;
+      margin-top: 8px;
+      color: white;
+    }
+    .metric small {
+      color: #94a3b8;
+      font-size: 0.8rem;
+      margin-top: 4px;
+      line-height: 1.45;
+    }
+
+    /* Steps Section */
+    .content-section {
+      padding-top: 80px;
+      padding-bottom: 40px;
+    }
+    .section-heading h2 {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      line-height: 1.25;
+      letter-spacing: -0.03em;
+      margin: 0 0 12px;
+      font-weight: 900;
+    }
+    .steps {
+      padding: 0;
+      margin: 20px 0 40px;
+      list-style: none;
+      border-top: 1px solid var(--line);
+    }
+    .steps li {
+      display: grid;
+      grid-template-columns: 75px 1fr;
+      gap: 20px;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .steps li > span {
+      font-weight: 900;
+      color: #168e8a;
+      font-size: 1.5rem;
+      font-family: monospace;
+      line-height: 1;
+      padding-top: 3px;
+    }
+    .steps h3 {
+      margin: 0 0 6px;
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .steps p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.68;
+      font-size: 0.96rem;
+    }
+
+    /* Callout */
+    .callout {
+      margin: 40px 0 60px;
+      padding: 28px 32px;
+      border-left: 6px solid var(--orange);
+      background: #fff8f3;
+      border-radius: 2px;
+      border-top: 1px solid #fed7aa;
+      border-right: 1px solid #fed7aa;
+      border-bottom: 1px solid #fed7aa;
+    }
+    .callout-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .callout-tag {
+      background: var(--orange);
+      color: white;
+      font-weight: 800;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+    }
+    .callout strong {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #9a3412;
+    }
+    .callout-body {
+      color: #334155;
+      font-size: 0.98rem;
+      line-height: 1.78;
+    }
+    .callout-body p { margin: 0 0 12px; }
+    .callout-body p:last-child { margin-bottom: 0; }
+
+    /* Footer */
+    .site-footer {
+      max-width: var(--max);
+      margin: 60px auto 0;
+      padding: 32px 24px 60px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .site-footer a {
+      color: #168e8a;
+      font-weight: 700;
+      text-decoration: underline;
+    }
+
+    /* Diff & Explanation Tags */
+    .pattern-tag {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 0.72rem;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-weight: 700;
+      margin-right: 6px;
+      font-family: monospace;
+    }
+    .annotation-box {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-left: 3px solid #64748b;
+      font-size: 0.82rem;
+      color: #334155;
+      border-radius: 2px;
+      line-height: 1.6;
+    }
+    .annotation-box b { color: #0f172a; }
+
+    /* Hidden states for toggle */
+    .content-original { display: none; }
+    .content-revised { display: block; }
+    .show-original .content-original { display: block !important; }
+    .show-original .content-revised { display: none !important; }
+    
+    .show-annotations .annotation-box { display: block; }
+    body:not(.show-annotations) .annotation-box { display: none; }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; gap: 40px; min-height: auto; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .metric { padding: 20px 16px; }
+      .mock-toolbar { flex-direction: column; align-items: flex-start; gap: 8px; }
+    }
+    @media (max-width: 600px) {
+      .metrics-grid { grid-template-columns: 1fr; }
+      .mini-compare { grid-template-columns: 1fr; }
+      .steps li { grid-template-columns: 48px 1fr; gap: 12px; }
+      .site-footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body class="show-annotations">
+
+  <!-- Interactive Mockup Toolbar -->
+  <aside class="mock-toolbar" aria-label="Mock 預覽控制台">
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <span class="badge">speak-human-tw · 去個人化・中性優雅微幽默版</span>
+      <span><strong>首頁正式套用版預覽</strong></span>
+    </div>
+    <div class="mode-switch-group">
+      <button type="button" class="mode-btn active" id="btnRevised" onclick="setMode('revised')">✦ 說人話正式改寫版</button>
+      <button type="button" class="mode-btn" id="btnOriginal" onclick="setMode('original')">舊版文案</button>
+      <button type="button" class="mode-btn" id="btnToggleNotes" onclick="toggleNotes()">顯示／隱藏改寫說明</button>
+    </div>
+  </aside>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="#" aria-label="Lottery ML Lab 首頁">
+        <span class="brand-mark">L</span>
+        <span>Lottery <b>ML Lab</b></span>
+      </a>
+      <nav aria-label="主要導覽">
+        <a href="#overview"><span class="content-revised">專案總覽</span><span class="content-original">總覽</span></a>
+        <a href="#data"><span class="content-revised">開獎資料</span><span class="content-original">資料</span></a>
+        <a href="#features"><span class="content-revised">特徵工程</span><span class="content-original">特徵工程</span></a>
+        <a href="#experiments"><span class="content-revised">互動實驗室</span><span class="content-original">實驗室</span></a>
+        <a href="#evaluation"><span class="content-revised">盲測驗收</span><span class="content-original">最終評估</span></a>
+        <a href="#forward"><span class="content-revised">前瞻盲測</span><span class="content-original">前瞻盲測</span></a>
+        <a href="#findings"><span class="content-revised">結論與限制</span><span class="content-original">結論與限制</span></a>
+        <a href="#reproducibility"><span class="content-revised">重現步驟</span><span class="content-original">重現方法</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero Section -->
+    <section class="hero section-shell" id="overview">
+      <div>
+        <p class="eyebrow">
+          <span class="content-revised">REPRODUCIBLE ML CASE STUDY ｜ 經得起檢驗的機器學習實測</span>
+          <span class="content-original">REPRODUCIBLE ML CASE STUDY · 可重現的機器學習案例</span>
+        </p>
+
+        <h1>
+          <span class="content-revised">
+            威力彩幾乎純屬隨機，
+            <em>那這套機器學習系統究竟在測什麼？</em>
+          </span>
+          <span class="content-original">
+            當預測目標是隨機的，<br/>
+            <em>ML 工程還能證明什麼？</em>
+          </span>
+        </h1>
+
+        <div class="hero-copy">
+          <div class="content-revised">
+            <p>彩券開獎是標準的隨機事件，指望靠演算法算出下期頭獎並不切實際。但正因為結果難以預測，它反而成了檢驗機器學習工程紀律的最佳試金石：這套端到端驗證管線從源頭為歷史資料打上 SHA-256 數位指紋防竄改、嚴格切齊時間軸杜絕偷看未來答案（Data Leakage）、依年份向前滾動回測，最後將 2024 年後的資料封存為只測一次的盲測集（Locked Holdout）。重點不在報明牌，而在示範一套連面對隨機世界都不作弊、不硬凹的實驗流程。</p>
+          </div>
+          <div class="content-original">
+            <p>這個專案用台灣威力彩示範一套完整的機器學習流程：保存不可任意改動的原始資料備份（immutable snapshot）、確保模型偷看不到未來答案（leakage-safe features）、依時間順序反覆測試（Time Series Cross Validation），最後才打開保留資料做總驗收（locked holdout）。重點不是提供明牌，而是證明實驗過程經得起檢查。</p>
+          </div>
+        </div>
+
+        <div class="annotation-box">
+          <span class="pattern-tag">去個人化・客觀優雅</span><span class="pattern-tag">Pattern #15 消除括號同義補丁</span>
+          <b>改寫說明：</b> 拿掉第一人稱「我」與過度誇張的發財比喻，改以客觀從容的視角點出「隨機事件正是檢驗 ML 工程紀律的最佳試金石」，同時消除舊版連續四個括號的翻譯腔。
+        </div>
+
+        <div class="button-row">
+          <a class="button primary" href="#experiments">
+            <span class="content-revised">進入互動實驗室</span>
+            <span class="content-original">進入 Experiment Lab 實驗室</span>
+          </a>
+          <a class="button secondary" href="#reproducibility">
+            <span class="content-revised">查看本機重現步驟</span>
+            <span class="content-original">查看如何重現結果</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Hero Panel -->
+      <div class="hero-panel" aria-label="專案關鍵結果">
+        <span class="status">
+          <i/>
+          <span class="content-revised">PIPELINE VERIFIED ｜ 端到端流程驗證通過</span>
+          <span class="content-original">PIPELINE VERIFIED · 流程已驗證</span>
+        </span>
+
+        <div class="hero-number-wrap">
+          <span class="hero-number">0.970</span>
+        </div>
+
+        <p class="hero-panel-lead">
+          <span class="content-revised">模型在盲測封存期中，每期第一區挑 6 顆平均對中 0.970 顆號碼</span>
+          <span class="content-original">模型在最終測試中，每期第一區平均命中 0.970 個號碼</span>
+        </p>
+
+        <small class="hero-meaning">
+          <span class="content-revised">白話來說，每期選 6 顆球，平均對中不到 1 顆。這只是單純的號碼命中統計，既非中獎率，更與頭獎機率無關。</span>
+          <span class="content-original">「平均命中」是選出的 6 個號碼中，平均有幾個與開獎號碼相同；不是中獎率，也不是頭獎機率。</span>
+        </small>
+
+        <div class="mini-compare">
+          <span>
+            <b>
+              <span class="content-revised">隨機期望值 0.947</span>
+              <span class="content-original">Uniform 0.947</span>
+            </b>
+            <small>
+              <span class="content-revised">隨機選號每期理論期望命中 0.947 顆</span>
+              <span class="content-original">隨機選號每期理論期望命中 0.947 個</span>
+            </small>
+          </span>
+          <span>
+            <b>95% CI 跨越 0</b>
+            <small>
+              <span class="content-revised">與隨機選號的微幅差距，統計上可能純屬巧合</span>
+              <span class="content-original">模型與隨機選號的差距，可能只是運氣</span>
+            </small>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Metrics Band -->
+    <section class="metrics-band">
+      <div class="section-shell metrics-grid">
+        <article class="metric">
+          <strong>1,959</strong>
+          <span>
+            <span class="content-revised">完整歷史開獎期數</span>
+            <span class="content-original">歷史開獎期數</span>
+          </span>
+          <small>
+            <span class="content-revised">涵蓋 2008–2026 年，期期皆有雜湊存證</span>
+            <span class="content-original">涵蓋 2008–2026 年</span>
+          </small>
+        </article>
+
+        <article class="metric">
+          <strong>46</strong>
+          <span>
+            <span class="content-revised">每期獨立評分候選碼</span>
+            <span class="content-original">每期要評分的候選號碼</span>
+          </span>
+          <small>
+            <span class="content-revised">第一區 38 碼＋第二區 8 碼分開建模</span>
+            <span class="content-original">第一區 38 個＋第二區 8 個</span>
+          </small>
+        </article>
+
+        <article class="metric">
+          <strong>6</strong>
+          <span>
+            <span class="content-revised">時間序列回測輪次</span>
+            <span class="content-original">Time Series CV 時間測試輪次</span>
+          </span>
+          <small>
+            <span class="content-revised">2018–2023 年逐年向前滾動驗證</span>
+            <span class="content-original">逐年模擬 2018–2023</span>
+          </small>
+        </article>
+
+        <article class="metric">
+          <strong>265</strong>
+          <span>
+            <span class="content-revised">封存盲測驗收期數</span>
+            <span class="content-original">Locked holdout 最終測試期數</span>
+          </span>
+          <small>
+            <span class="content-revised">2024 年後資料完全隔離，定案後一次開箱</span>
+            <span class="content-original">2024 年後才一次驗收</span>
+          </small>
+        </article>
+      </div>
+    </section>
+
+    <!-- Workflow Steps -->
+    <section class="section-shell content-section" id="features">
+      <div class="section-heading">
+        <p class="eyebrow">
+          <span class="content-revised">ENGINEERING DISCIPLINE ｜ 四道防作弊工程防線</span>
+          <span class="content-original">END-TO-END WORKFLOW · 完整工作流程</span>
+        </p>
+        <h2>
+          <span class="content-revised">把每個環節攤在陽光下，讓數據自己說話</span>
+          <span class="content-original">從來源網頁到一般人也能檢查的結論</span>
+        </h2>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <span>01</span>
+          <div>
+            <h3>
+              <span class="content-revised">Fetch & Snapshot｜爬蟲與原始存證</span>
+              <span class="content-original">Fetch & Snapshot｜抓取並保存</span>
+            </h3>
+            <p>
+              <span class="content-revised">抓取早期 Big5 編碼的歷史網頁時，同步寫入不可改動的原始快照（Immutable Snapshot）並計算 SHA-256 數位指紋，確保歷史開獎紀錄無法在事後被悄悄修改。</span>
+              <span class="content-original">讀取來源 Big5 HTML，留下 SHA-256 數位指紋與 immutable snapshot；也就是保存一份可核對、不能悄悄竄改的原始資料。</span>
+            </p>
+          </div>
+        </li>
+
+        <li>
+          <span>02</span>
+          <div>
+            <h3>
+              <span class="content-revised">Feature Engineering｜嚴防偷看答案的特徵工程</span>
+              <span class="content-original">Feature Engineering｜整理模型線索</span>
+            </h3>
+            <p>
+              <span class="content-revised">將每期候選號碼拆為獨立資料列，並嚴格限制模型只能讀取當期開獎前的歷史統計，從架構上杜絕未來資訊洩漏（Data Leakage）。</span>
+              <span class="content-original">把每個候選號碼各做成一列資料，而且只使用當期開獎前已經知道的歷史資訊。</span>
+            </p>
+          </div>
+        </li>
+
+        <li>
+          <span>03</span>
+          <div>
+            <h3>
+              <span class="content-revised">Temporal Evaluation｜按時間軸向前滾動回測</span>
+              <span class="content-original">Temporal Evaluation｜按時間測試</span>
+            </h3>
+            <p>
+              <span class="content-revised">彩券資料具有時間順序，隨機打散切分只會造成資訊外溢。實驗採用 Expanding-window CV 逐年模擬「拿過去預測未來」，並將 2024 年後的資料鎖進盲測區，調參完畢才開箱驗收。</span>
+              <span class="content-original">用 Expanding-window CV 逐年模擬「拿過去預測未來」，並把 2024 年後資料鎖成最後才看的 holdout。</span>
+            </p>
+          </div>
+        </li>
+
+        <li>
+          <span>04</span>
+          <div>
+            <h3>
+              <span class="content-revised">Communicate Honestly｜誠實面對負結果</span>
+              <span class="content-original">Communicate Honestly｜誠實解讀</span>
+            </h3>
+            <p>
+              <span class="content-revised">同時擺出隨機選號與歷史累積頻率作為對照基準，並透過 Paired Bootstrap 檢驗信賴區間。既然差距未達統計顯著，就坦然呈現這份負結果，不把巧合包裝成預測神話。</span>
+              <span class="content-original">同時呈現 baseline（簡單比較基準）、bootstrap CI（不確定範圍）與負結果，不把偶然命中包裝成投注能力。</span>
+            </p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Honest Callout -->
+    <section class="section-shell content-section" id="findings">
+      <aside class="callout">
+        <div class="callout-header">
+          <span class="callout-tag">EXPERIMENT VERDICT</span>
+          <strong>
+            <span class="content-revised">實驗總結：當複雜模型遇上簡單統計</span>
+            <span class="content-original">最重要的研究結論</span>
+          </strong>
+        </div>
+
+        <div class="callout-body">
+          <div class="content-revised">
+            <p>在封存至最後才開箱的盲測（Holdout）中，模型的帳面平均命中數雖然略高於隨機選號的理論期望值；但經過 Paired Bootstrap 抽樣檢驗，兩區的 95% 信賴區間皆跨越 0，意味著這點微幅領先很可能只是抽樣波動帶來的巧合。更耐人尋味的是，完全不靠機器學習、單純挑歷史常開號碼的基準方法（Historical Frequency），表現反而還微幅領先模型。在現有資料與實驗設計下，沒有證據顯示模型能穩定超越隨機選號；完整實驗數據與方法限制，皆可於模型卡交叉核對。</p>
+          </div>
+          <div class="content-original">
+            <p>在最後才打開的 holdout 測試中，模型的平均命中數看起來比 Uniform（完全隨機選號）高；但 paired bootstrap 95% CI 跨越 0，代表這個差距仍可能只是抽樣運氣。更簡單的 Historical Frequency（依過去所有期數的累積出現率排序）甚至略高於模型。因此目前沒有證據能說模型穩定勝過隨機選號；完整結果與限制可在模型卡交叉核對。</p>
+          </div>
+        </div>
+
+        <div class="annotation-box" style="margin-top:16px;">
+          <span class="pattern-tag">中性優雅・冷幽默</span><span class="pattern-tag">不武斷・聚焦本實驗證據</span>
+          <b>改寫說明：</b> 標題改為「實驗總結：當複雜模型遇上簡單統計」，以「更耐人尋味的是⋯⋯」優雅點出複雜模型被簡單統計基準微幅超車的反差；結論嚴格聚焦於「在現有資料與實驗設計下，沒有證據顯示模型能穩定超越隨機選號」，不對外界可能性做武斷定論。
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>
+      <span class="content-revised">Lottery ML Lab · 可重現、可檢驗的機器學習工程案例，非投注建議。</span>
+      <span class="content-original">Lottery ML Lab · 可重現、可檢查的機器學習案例，不是投注建議。</span>
+    </p>
+    <a href="https://github.com/newesp/Lottery-ML-Portfolio" target="_blank" rel="noopener noreferrer">GitHub 原始碼 ↗</a>
+  </footer>
+
+  <script>
+    function setMode(mode) {
+      const body = document.body;
+      const btnRevised = document.getElementById('btnRevised');
+      const btnOriginal = document.getElementById('btnOriginal');
+
+      if (mode === 'original') {
+        body.classList.add('show-original');
+        btnOriginal.classList.add('active');
+        btnRevised.classList.remove('active');
+      } else {
+        body.classList.remove('show-original');
+        btnRevised.classList.add('active');
+        btnOriginal.classList.remove('active');
+      }
+    }
+
+    function toggleNotes() {
+      document.body.classList.toggle('show-annotations');
+      const btn = document.getElementById('btnToggleNotes');
+      if (document.body.classList.contains('show-annotations')) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,21 +1,21 @@
 # Model Card：Lottery ML v1
 
-## Intended use
+## 設計目的與適用範圍（Intended Use）
 
-展示可重現的 ML workflow、temporal evaluation 與負結果溝通。適合 code review、面試討論與學習；不適合投注、財務決策或宣稱能提高中獎機率。
+本模型旨在展示可重現的機器學習工程流程、嚴格的時間序列驗證，以及如何誠實溝通實驗負結果。適合用於程式碼審閱（Code Review）、工程架構交流與方法論學習；不適用於彩券投注、財務決策，亦不宣稱能提高任何中獎機率。
 
-## Data
+## 資料來源（Data）
 
-NFD 歷年頁面，凍結實驗時為 1,927 期（2008-01-24 至 2026-07-13；資料每週持續更新）。資料來源不是官方 API；專案保存 raw lineage、SHA-256、驗證結果與一筆具交叉來源的 2025-10-09 第二區修正。
+取自 NFD 歷年公開網頁，實驗凍結時共計 1,927 期（涵蓋 2008-01-24 至 2026-07-13，資料每週持續自動更新）。由於來源並非官方 API，管線完整保留了原始網頁快照、SHA-256 數位指紋、自動化檢核紀錄，以及一筆附帶多家新聞交叉比對來源的 2025-10-09 第二區球號勘誤。
 
-## Models
+## 模型與選型（Models）
 
-Development 比較 Logistic Regression、Random Forest、LightGBM 與三個 baselines。Frozen selection 最終使用 Random Forest；第一區採 `frequency_gap`，第二區採 `full`，seeds 17/42/2026。
+開發階段同步比較 Logistic Regression、Random Forest、LightGBM 與三組統計比較基準（Baselines）。經選型鎖定（Frozen Selection）後，最終採用 Random Forest：第一區搭配 `frequency_gap` 特徵組合，第二區搭配 `full` 特徵組合，並以 Seeds 17／42／2026 進行三組隨機起點集成評估。
 
-## Results and limitations
+## 實驗結果與方法限制（Results and Limitations）
 
-Holdout-v1.1 點估計略高於 Uniform 理論期望值（第一區 0.970 vs 0.947、第二區 0.132 vs 0.125），但 paired bootstrap confidence intervals 均跨越 0（第一區 [-0.109, 0.155]、第二區 [-0.049, 0.064]），Historical Frequency（歷史累積頻率）baseline 也略高於模型。前瞻盲測（Forward Test Ledger）亦於開獎前鎖定選號進行無洩漏驗證。Lottery draws 被設計為隨機且歷史期數有限；feature search、model comparison 與 fold variance 都可能造成偶然高分。結果不支持可泛化的預測能力。
+在 `holdout-v1.1` 封存盲測中，兩區模型的平均命中數點估計雖微幅高於隨機選號的理論期望值（第一區 0.970 vs 0.947、第二區 0.132 vs 0.125），但 95% Paired Bootstrap 信賴區間皆跨越 0（第一區 `[-0.109, 0.155]`、第二區 `[-0.049, 0.064]`），且單純按歷史累積出現率排序的簡單基準（Historical Frequency）在兩區皆微幅高於模型。此外，前瞻盲測（Forward Test Ledger）亦持續於每期開獎前預先鎖定選號，進行無洩漏的長期追蹤。由於彩券開獎本質上接近純隨機且歷史期數有限，特徵篩選、模型比較與跨年波動都可能帶來帳面上的微幅高低。整體實驗結果不支持模型具備可泛化的預測能力。
 
-## Ethical communication
+## 誠實溝通原則（Ethical Communication）
 
-網站固定顯示「不是投注建議」，同時展示 baselines、不確定區間、資料限制與反例。不得以單一 fold、單一 seed 或點估計製作命中宣傳。
+展示網站全程明確標示「非投注建議」，並同時並陳簡單基準、信賴區間、資料限制與反例說明，不擷取單一年度、單一隨機起點或單一帳面點估計來渲染預測效果。
