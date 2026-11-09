@@ -3,6 +3,7 @@ import Link from "next/link";
 const links = [
   ["/", "總覽"], ["/data", "資料"], ["/features", "特徵工程"],
   ["/experiments", "實驗室"], ["/evaluation", "最終評估"],
+  ["/forward", "前瞻盲測"],
   ["/findings", "結論與限制"], ["/reproducibility", "重現方法"],
 ] as const;
 

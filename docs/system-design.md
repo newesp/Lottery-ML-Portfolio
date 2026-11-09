@@ -14,8 +14,9 @@ NFD 年度 Big5 HTML
   -> candidate-row feature builder (38 + 8 rows/draw)
   -> 2018–2023 expanding-window CV
   -> frozen selection-v1.json (development artifact SHA)
-  -> 2024+ locked holdout + paired bootstrap
+  -> 2024+ locked holdout + paired bootstrap (v1.1 analytical expectation)
   -> versioned JSON artifacts
+  -> forward predict -> append-only ledger.jsonl -> derived summary.json
   -> Next.js static export -> GitHub Pages
 ```
 
@@ -23,9 +24,10 @@ Python 在本機或 GitHub Actions 執行。GitHub Pages 只提供靜態 HTML、
 
 ## 更新策略
 
-- GitHub Actions 每週一、週四台灣時間 21:15 執行 ingestion。
+- GitHub Actions 每週一、週四台灣時間 21:15 執行 ingestion，週二、週五 09:00 執行補抓以應對來源發布延遲。
 - 驗證失敗時不發布 canonical，不留下半成品。
 - 內容未改變時不建立 snapshot，也不產生無意義 commit。
+- Ingestion 後自動執行 `lottery-ml forward predict`，在開獎前將模型推薦選號鎖定至 `artifacts/forward/ledger.jsonl`，並決定性推導出 `summary.json`；CI 透過 `git diff --numstat` 嚴格保證 ledger 只能增加不能刪減。
 - 資料更新不自動改寫 locked holdout 或 selection；完整 reference experiment 由明確手動命令執行。
 - push 到 `main` 後 Pages workflow 重新建立 static export。
 

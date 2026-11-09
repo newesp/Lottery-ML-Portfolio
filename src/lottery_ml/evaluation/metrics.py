@@ -65,7 +65,6 @@ def evaluate_predictions(
         raise ValueError("targets must be binary")
 
     pick_count = 6 if area == "area1" else 1
-    maximum = 38 if area == "area1" else 8
     ranked = merged.sort_values(
         ["draw_id", "probability", "number"],
         ascending=[True, False, True],
@@ -74,7 +73,7 @@ def evaluate_predictions(
     top = ranked.groupby("draw_id", sort=False).head(pick_count)
     hits = top.groupby("draw_id", sort=False)["target"].sum()
     average_hits = float(hits.mean())
-    expected_uniform_hits = pick_count * pick_count / maximum
+    expected_uniform_hits_val = expected_uniform_hits(area)
     clipped = np.clip(probabilities, 1e-15, 1 - 1e-15)
     log_loss = float(
         -np.mean(labels * np.log(clipped) + (1 - labels) * np.log(1 - clipped))
@@ -85,7 +84,53 @@ def evaluate_predictions(
         average_hits=average_hits,
         precision_at_k=average_hits / pick_count,
         recall_at_k=average_hits / pick_count,
-        lift_over_uniform=average_hits / expected_uniform_hits,
+        lift_over_uniform=average_hits / expected_uniform_hits_val,
         brier_score=float(np.mean((probabilities - labels) ** 2)),
+        log_loss=log_loss if math.isfinite(log_loss) else float("inf"),
+    )
+
+
+def expected_uniform_hits(area: AreaName) -> float:
+    pick_count = 6 if area == "area1" else 1
+    maximum = 38 if area == "area1" else 8
+    return pick_count * pick_count / maximum
+
+
+def evaluate_uniform_baseline(
+    targets: pd.DataFrame,
+    *,
+    area: AreaName,
+) -> MetricSummary:
+    """Return analytical uniform baseline metrics over the given target frame."""
+    expected_target_columns = {*KEY_COLUMNS, "target"}
+    if not expected_target_columns <= set(targets):
+        raise PredictionKeyError("targets are missing required columns")
+    if targets.duplicated(KEY_COLUMNS).any():
+        raise PredictionKeyError("duplicate prediction keys")
+    if set(targets["area"]) != {area}:
+        raise PredictionKeyError(f"metrics received rows outside area {area}")
+
+    labels = targets["target"].to_numpy(dtype=float)
+    if not set(np.unique(labels)) <= {0.0, 1.0}:
+        raise ValueError("targets must be binary")
+
+    pick_count = 6 if area == "area1" else 1
+    maximum = 38 if area == "area1" else 8
+    p = pick_count / maximum
+    avg_hits = expected_uniform_hits(area)
+    probabilities = np.full_like(labels, p, dtype=float)
+    clipped = np.clip(probabilities, 1e-15, 1 - 1e-15)
+    log_loss = float(
+        -np.mean(labels * np.log(clipped) + (1 - labels) * np.log(1 - clipped))
+    )
+    brier_score = float(np.mean((probabilities - labels) ** 2))
+    return MetricSummary(
+        area=area,
+        draw_count=int(targets["draw_id"].nunique()),
+        average_hits=avg_hits,
+        precision_at_k=pick_count / maximum,
+        recall_at_k=pick_count / maximum,
+        lift_over_uniform=1.0,
+        brier_score=brier_score,
         log_loss=log_loss if math.isfinite(log_loss) else float("inf"),
     )

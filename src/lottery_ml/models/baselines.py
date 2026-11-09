@@ -11,15 +11,24 @@ def predict_uniform(frame: pd.DataFrame) -> pd.DataFrame:
     return _predict_from_scores(frame, np.ones(len(frame), dtype=float))
 
 
-def predict_rolling_frequency(frame: pd.DataFrame) -> pd.DataFrame:
+def predict_historical_frequency(frame: pd.DataFrame) -> pd.DataFrame:
+    """Score candidates by lifetime (historical) frequency from draw 1 to the previous draw."""
     if "lifetime_rate" not in frame:
-        raise ValueError("rolling frequency baseline requires lifetime_rate")
+        raise ValueError("historical frequency baseline requires lifetime_rate")
     scores = frame["lifetime_rate"].to_numpy(dtype=float) + 1e-9
     return _predict_from_scores(frame, scores)
 
 
+def predict_rolling_frequency(frame: pd.DataFrame) -> pd.DataFrame:
+    """Legacy name kept for frozen v1 artifacts.
+
+    Scores by lifetime (historical) frequency, not a rolling window.
+    """
+    return predict_historical_frequency(frame)
+
+
 def predict_shuffled_history(frame: pd.DataFrame, seed: int) -> pd.DataFrame:
-    predictions = predict_rolling_frequency(frame)
+    predictions = predict_historical_frequency(frame)
     rng = np.random.default_rng(seed)
     for draw_id in predictions["draw_id"].astype(str).unique().tolist():
         for area in ("area1", "area2"):
@@ -38,6 +47,8 @@ def _predict_from_scores(frame: pd.DataFrame, scores: np.ndarray) -> pd.DataFram
         for area, pick_count in (("area1", 6), ("area2", 1)):
             mask = (result["draw_id"] == draw_id) & (result["area"] == area)
             positions = np.flatnonzero(mask.to_numpy())
+            if len(positions) == 0:
+                continue
             probabilities = _normalize_to_pick_count(
                 score_series.iloc[positions].to_numpy(dtype=float), pick_count
             )

@@ -130,3 +130,85 @@ def test_holdout_experiment_writes_artifact(tmp_path: Path, monkeypatch) -> None
 
     assert exit_code == 0
     assert json.loads(output.read_text(encoding="utf-8"))["experiment_id"] == "holdout-v1"
+
+
+def test_forward_predict_cli(tmp_path: Path, monkeypatch, capsys) -> None:
+    fake_result = {
+        "status": "created",
+        "ledger_path": str(tmp_path / "ledger.jsonl"),
+        "summary_path": str(tmp_path / "summary.json"),
+        "cutoff_draw_id": "2026-11-02",
+        "assumed_target_date": "2026-11-05",
+    }
+    monkeypatch.setattr(cli, "load_selection", lambda path, root: object())
+    monkeypatch.setattr(cli, "load_feature_config", lambda path: object())
+    monkeypatch.setattr(cli, "load_canonical", lambda path: [object()])
+    monkeypatch.setattr(cli, "create_entry", lambda **kwargs: fake_result)
+
+    step_summary_file = tmp_path / "step_summary.md"
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(step_summary_file))
+
+    # Also create a dummy summary.json for _write_step_summary
+    (tmp_path / "summary.json").write_text(
+        json.dumps({
+            "latest_pending": {
+                "predictions": {
+                    "model": {
+                        "area1": {"picks": [1, 2, 3, 4, 5, 6]},
+                        "area2": {"picks": [7]},
+                    },
+                    "historical_frequency": {
+                        "area1": {"picks": [8, 9, 10, 11, 12, 13]},
+                        "area2": {"picks": [1]},
+                    },
+                }
+            },
+            "entries": []
+        }),
+        encoding="utf-8"
+    )
+
+    exit_code = cli.main(["forward", "predict", "--root", str(tmp_path)])
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    output = json.loads(captured.out)
+    assert output["status"] == "created"
+    assert output["cutoff_draw_id"] == "2026-11-02"
+
+    assert step_summary_file.exists()
+    summary_content = step_summary_file.read_text(encoding="utf-8")
+    assert "Forward Test Prediction" in summary_content
+    assert "01, 02, 03, 04, 05, 06" in summary_content
+
+
+def test_forward_summarize_cli(tmp_path: Path, monkeypatch, capsys) -> None:
+    draw_mock = SimpleNamespace(draw_id="2026-11-02", draw_date=cli.date(2026, 11, 2))
+    monkeypatch.setattr(cli, "load_canonical", lambda path: [draw_mock])
+    monkeypatch.setattr(cli, "load_ledger_entries", lambda path: [])
+    monkeypatch.setattr(
+        cli,
+        "build_summary",
+        lambda entries, draws: {"schema_version": "1.0.0", "aggregate": {"resolved_count": 0}},
+    )
+
+    exit_code = cli.main(["forward", "summarize", "--root", str(tmp_path)])
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    output = json.loads(captured.out)
+    assert output["status"] == "summarized"
+    assert output["cutoff_draw_id"] == "2026-11-02"
+    assert output["assumed_target_date"] == "2026-11-05"
+
+
+def test_forward_cli_error_handling(tmp_path: Path, monkeypatch, capsys) -> None:
+    monkeypatch.setattr(cli, "load_selection", lambda path, root: object())
+    monkeypatch.setattr(cli, "load_feature_config", lambda path: object())
+    monkeypatch.setattr(
+        cli,
+        "load_canonical",
+        lambda path: (_ for _ in ()).throw(cli.ForwardError("test forward error")),
+    )
+    exit_code = cli.main(["forward", "predict", "--root", str(tmp_path)])
+    assert exit_code == 1
+    assert "test forward error" in capsys.readouterr().err
+

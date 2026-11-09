@@ -14,13 +14,13 @@
         },
         "uniform": {
           "area": "area1",
-          "average_hits": 0.8716981132075472,
+          "average_hits": 0.9473684210526315,
           "brier_score": 0.13296398891966757,
           "draw_count": 265,
-          "lift_over_uniform": 0.9201257861635221,
+          "lift_over_uniform": 1.0,
           "log_loss": 0.4361623253853443,
-          "precision_at_k": 0.14528301886792452,
-          "recall_at_k": 0.14528301886792452
+          "precision_at_k": 0.15789473684210525,
+          "recall_at_k": 0.15789473684210525
         }
       },
       "ensemble_metrics": {
@@ -33,13 +33,33 @@
         "precision_at_k": 0.16163522012578616,
         "recall_at_k": 0.16163522012578616
       },
+      "legacy_v1_fixed_ticket_uniform": {
+        "metrics": {
+          "area": "area1",
+          "average_hits": 0.8716981132075472,
+          "brier_score": 0.13296398891966757,
+          "draw_count": 265,
+          "lift_over_uniform": 0.9201257861635221,
+          "log_loss": 0.4361623253853443,
+          "precision_at_k": 0.14528301886792452,
+          "recall_at_k": 0.14528301886792452
+        },
+        "paired_bootstrap_hits_vs_uniform": {
+          "confidence_level": 0.95,
+          "estimate": 0.09811320754716982,
+          "lower": -0.04150943396226415,
+          "resamples": 10000,
+          "seed": 2026,
+          "upper": 0.23773584905660378
+        }
+      },
       "paired_bootstrap_hits_vs_uniform": {
         "confidence_level": 0.95,
-        "estimate": 0.09811320754716982,
-        "lower": -0.04150943396226415,
+        "estimate": 0.022442899702085496,
+        "lower": -0.07567030784508431,
         "resamples": 10000,
         "seed": 2026,
-        "upper": 0.23773584905660378
+        "upper": 0.1243296921549157
       },
       "seed_results": [
         {
@@ -109,13 +129,13 @@
         },
         "uniform": {
           "area": "area2",
-          "average_hits": 0.10566037735849057,
+          "average_hits": 0.125,
           "brier_score": 0.109375,
           "draw_count": 265,
-          "lift_over_uniform": 0.8452830188679246,
+          "lift_over_uniform": 1.0,
           "log_loss": 0.3767701612564368,
-          "precision_at_k": 0.10566037735849057,
-          "recall_at_k": 0.10566037735849057
+          "precision_at_k": 0.125,
+          "recall_at_k": 0.125
         }
       },
       "ensemble_metrics": {
@@ -128,13 +148,33 @@
         "precision_at_k": 0.1320754716981132,
         "recall_at_k": 0.1320754716981132
       },
+      "legacy_v1_fixed_ticket_uniform": {
+        "metrics": {
+          "area": "area2",
+          "average_hits": 0.10566037735849057,
+          "brier_score": 0.109375,
+          "draw_count": 265,
+          "lift_over_uniform": 0.8452830188679246,
+          "log_loss": 0.3767701612564368,
+          "precision_at_k": 0.10566037735849057,
+          "recall_at_k": 0.10566037735849057
+        },
+        "paired_bootstrap_hits_vs_uniform": {
+          "confidence_level": 0.95,
+          "estimate": 0.026415094339622643,
+          "lower": -0.03018867924528302,
+          "resamples": 10000,
+          "seed": 2026,
+          "upper": 0.0830188679245283
+        }
+      },
       "paired_bootstrap_hits_vs_uniform": {
         "confidence_level": 0.95,
-        "estimate": 0.026415094339622643,
-        "lower": -0.03018867924528302,
+        "estimate": 0.007075471698113208,
+        "lower": -0.030660377358490566,
         "resamples": 10000,
         "seed": 2026,
-        "upper": 0.0830188679245283
+        "upper": 0.04858490566037736
       },
       "seed_results": [
         {
@@ -194,9 +234,10 @@
   "data_sha256": "0d439e23aea086e2ed422da7aee1e4597a0a342b9a9e6e4d1762a2099b4d19fd",
   "development_artifact_sha256": "aabbe6361a8327f3cbe4564a8dd4f9bde59b88b0721f2bbe2ed35e1575aa448e",
   "draw_count": 1927,
-  "experiment_id": "holdout-v1",
+  "experiment_id": "holdout-v1.1",
   "holdout_draw_count": 265,
   "holdout_start": "2024-01-01",
-  "schema_version": "1.0.0",
-  "selection_id": "selection-v1"
+  "schema_version": "1.1.0",
+  "selection_id": "selection-v1",
+  "supersedes": "holdout-v1"
 }

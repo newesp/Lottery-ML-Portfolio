@@ -45,11 +45,54 @@ class _AreaState:
         )
 
 
+def _accumulate_states(
+    draws: list[DrawRecord], config: FeatureConfig
+) -> dict[AreaName, _AreaState]:
+    states: dict[AreaName, _AreaState] = {
+        "area1": _AreaState.create(38, 6, config),
+        "area2": _AreaState.create(8, 1, config),
+    }
+    for draw_index, draw in enumerate(draws):
+        selections: dict[AreaName, set[int]] = {
+            "area1": set(draw.area1),
+            "area2": {draw.area2},
+        }
+        for area in ("area1", "area2"):
+            _update_state(states[area], selections[area], draw_index, config)
+    return states
+
+
+def _build_draw_rows(
+    states: dict[AreaName, _AreaState],
+    draw_id: str,
+    draw_date: date,
+    draw_index: int,
+    config: FeatureConfig,
+    selections: dict[AreaName, set[int]] | None = None,
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for area in ("area1", "area2"):
+        state = states[area]
+        selected = selections[area] if selections is not None else None
+        for number in range(1, state.max_number + 1):
+            row: dict[str, object] = {
+                "draw_id": draw_id,
+                "draw_date": draw_date.isoformat(),
+                "area": area,
+                "number": number,
+            }
+            if selected is not None:
+                row["target"] = int(number in selected)
+            row.update(_features(state, number, draw_index, draw_date, config))
+            rows.append(row)
+    return rows
+
+
 def build_candidate_rows(draws: list[DrawRecord], config: FeatureConfig) -> pd.DataFrame:
     if 20 not in config.rolling_windows:
         raise ValueError("feature config must include rolling window 20")
     _validate_draw_order(draws)
-    states = {
+    states: dict[AreaName, _AreaState] = {
         "area1": _AreaState.create(38, 6, config),
         "area2": _AreaState.create(8, 1, config),
     }
@@ -61,22 +104,39 @@ def build_candidate_rows(draws: list[DrawRecord], config: FeatureConfig) -> pd.D
             "area1": set(draw.area1),
             "area2": {draw.area2},
         }
+        rows.extend(
+            _build_draw_rows(
+                states, draw.draw_id, draw.draw_date, draw_index, config, selections
+            )
+        )
         for area in ("area1", "area2"):
-            state = states[area]
-            selected = selections[area]
-            for number in range(1, state.max_number + 1):
-                row: dict[str, object] = {
-                    "draw_id": draw.draw_id,
-                    "draw_date": draw.draw_date.isoformat(),
-                    "area": area,
-                    "number": number,
-                    "target": int(number in selected),
-                }
-                row.update(_features(state, number, draw_index, draw.draw_date, config))
-                rows.append(row)
-            _update_state(state, selected, draw_index, config)
+            _update_state(states[area], selections[area], draw_index, config)
 
     return pd.DataFrame(rows, columns=[*KEY_COLUMNS, TARGET_COLUMN, *all_features])
+
+
+def build_next_draw_rows(
+    draws: list[DrawRecord],
+    target_date: date,
+    target_draw_id: str,
+    config: FeatureConfig,
+) -> pd.DataFrame:
+    """Return 38 + 8 candidate rows for an unseen draw after draws[-1]. No target values."""
+    if not draws:
+        raise ValueError("draws must be non-empty")
+    if target_date <= draws[-1].draw_date:
+        raise ValueError("target_date must be strictly after the latest draw date")
+    if 20 not in config.rolling_windows:
+        raise ValueError("feature config must include rolling window 20")
+    _validate_draw_order(draws)
+
+    states = _accumulate_states(draws, config)
+    draw_index = len(draws)
+    rows = _build_draw_rows(
+        states, target_draw_id, target_date, draw_index, config, selections=None
+    )
+    all_features = feature_columns("full", config)
+    return pd.DataFrame(rows, columns=[*KEY_COLUMNS, *all_features])
 
 
 def _features(

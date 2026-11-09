@@ -5,15 +5,16 @@
 ## 展示內容
 
 - NFD Big5 歷史頁面擷取、驗證、versioned correction 與 immutable raw snapshot
-- 1,927 期 canonical draws，SHA-256 content addressing
+- 凍結實驗時為 1,927 期 canonical draws（資料每週持續更新），SHA-256 content addressing
 - 每期 38 + 8 candidate rows、46 個 leakage-safe features
 - 2018–2023 expanding-window Time Series Cross Validation
 - Logistic Regression、Random Forest、LightGBM 與三個 baselines
 - Frozen selection protocol、2024+ locked holdout、三 seeds ensemble
 - 10,000-resample paired draw bootstrap confidence intervals
+- 前瞻盲測（Forward Test Ledger）：開獎前自動鎖定推薦選號至 append-only 帳本，開獎後結算真實盲測成績
 - Next.js static case study 與互動 Experiment Lab，部署到 GitHub Pages
 
-最終結果沒有證明可泛化的預測優勢：兩區模型相對 Uniform 的 95% bootstrap CI 均跨越 0，Rolling Frequency baseline 也略優。這正是專案希望展示的判斷力。
+最終結果沒有證明可泛化的預測優勢：兩區模型相對 Uniform 的 95% bootstrap CI 均跨越 0，Historical Frequency（歷史累積頻率）baseline 也略優。這正是專案希望展示的判斷力。
 
 ## 使用技術
 
@@ -47,7 +48,7 @@ pnpm dev
 ```text
 configs/       feature、experiment、selection 與 correction registries
 data/          canonical dataset、immutable snapshots、manifests
-artifacts/     development 與 locked holdout 結果
+artifacts/     development、locked holdout 與 forward ledger/summary 結果
 src/           ingestion、features、models、evaluation、experiment runners
 tests/         contracts、leakage、key safety、determinism 與 CLI tests
 web/           Next.js static portfolio 與 Experiment Lab
@@ -67,7 +68,7 @@ v1 為繁體中文，英文技術名稱保留以方便延伸查詢。v2 規劃�
 
 - `CI`：Python tests / Ruff / mypy 與 web typecheck / ESLint / static build
 - `Deploy GitHub Pages`：`main` push 後部署 `web/out`
-- `Update verified lottery data`：每週一、週四台灣時間 21:15 ingestion；只有驗證成功且內容改變才 commit snapshot
+- `Update verified lottery data`：每週一、週四台灣時間 21:15 ingestion，週二、週五 09:00 補抓來源延遲；執行 `forward predict` 並以 append-only 限制提交 forward ledger 與 snapshot
 
 ## Disclaimer
 

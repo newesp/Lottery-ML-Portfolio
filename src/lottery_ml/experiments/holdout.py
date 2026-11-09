@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Sequence
 from dataclasses import asdict, dataclass
 from datetime import date
 from pathlib import Path
@@ -14,7 +15,12 @@ from numpy.typing import NDArray
 from lottery_ml.data.contracts import DrawRecord
 from lottery_ml.data.storage import serialize_draws
 from lottery_ml.evaluation.bootstrap import paired_mean_difference
-from lottery_ml.evaluation.metrics import AreaName, evaluate_predictions
+from lottery_ml.evaluation.metrics import (
+    AreaName,
+    evaluate_predictions,
+    evaluate_uniform_baseline,
+    expected_uniform_hits,
+)
 from lottery_ml.experiments.config import FeatureConfig
 from lottery_ml.features.builder import build_candidate_rows
 from lottery_ml.features.schema import feature_columns
@@ -64,9 +70,35 @@ class HoldoutReport:
     holdout_start: str
     holdout_draw_count: int
     areas: dict[str, object]
+    supersedes: str | None = None
 
     def to_dict(self) -> dict[str, object]:
-        return asdict(self)
+        payload = asdict(self)
+        if self.supersedes is None:
+            payload.pop("supersedes", None)
+        return payload
+
+
+def fit_seed_ensemble(
+    model: str,
+    parameters: dict[str, object],
+    seeds: Sequence[int],
+    train_x: pd.DataFrame,
+    train_y: pd.Series,
+    eval_x: pd.DataFrame,
+) -> tuple[list[NDArray[np.float64]], NDArray[np.float64]]:
+    """Fit an estimator for each seed and return per-seed probabilities and their mean ensemble."""
+    seed_probabilities: list[NDArray[np.float64]] = []
+    for seed in seeds:
+        estimator = cast(
+            ProbabilityEstimator,
+            build_estimator(model, parameters, seed),
+        )
+        estimator.fit(train_x, train_y)
+        proba = np.asarray(estimator.predict_proba(eval_x)[:, 1], dtype=np.float64)
+        seed_probabilities.append(proba)
+    ensemble_proba = np.mean(seed_probabilities, axis=0)
+    return seed_probabilities, ensemble_proba
 
 
 def load_selection(path: Path, root: Path) -> SelectionProtocol:
@@ -141,6 +173,8 @@ def run_holdout_evaluation(
     draws: list[DrawRecord],
     selection: SelectionProtocol,
     feature_config: FeatureConfig,
+    *,
+    version: str = "1.1",
 ) -> HoldoutReport:
     frame = build_candidate_rows(draws, feature_config)
     dates = pd.to_datetime(frame["draw_date"], errors="raise").dt.date
@@ -154,36 +188,63 @@ def run_holdout_evaluation(
         area_holdout = holdout.loc[holdout["area"] == area]
         columns = list(feature_columns(chosen.feature_set, feature_config))
         seed_metrics: list[dict[str, object]] = []
-        predictions_by_seed: list[pd.DataFrame] = []
-        for seed in chosen.seeds:
-            estimator = cast(
-                ProbabilityEstimator,
-                build_estimator(chosen.model, chosen.parameters, seed),
-            )
-            estimator.fit(area_train[columns], area_train["target"])
+        seed_probabilities, ensemble_proba = fit_seed_ensemble(
+            chosen.model,
+            chosen.parameters,
+            chosen.seeds,
+            area_train[columns],
+            area_train["target"],
+            area_holdout[columns],
+        )
+        for seed, proba in zip(chosen.seeds, seed_probabilities, strict=True):
             predictions = area_holdout[["draw_id", "area", "number"]].copy()
-            predictions["probability"] = estimator.predict_proba(area_holdout[columns])[:, 1]
-            predictions_by_seed.append(predictions)
+            predictions["probability"] = proba
             metric = evaluate_predictions(area_holdout, predictions, area=area)
             seed_metrics.append({"seed": seed, "metrics": metric.to_dict()})
-        ensemble = predictions_by_seed[0].copy()
-        ensemble["probability"] = np.mean(
-            [item["probability"].to_numpy(dtype=float) for item in predictions_by_seed], axis=0
-        )
+        ensemble = area_holdout[["draw_id", "area", "number"]].copy()
+        ensemble["probability"] = ensemble_proba
         ensemble_metric = evaluate_predictions(area_holdout, ensemble, area=area)
         uniform_all = predict_uniform(holdout)
         rolling_all = predict_rolling_frequency(holdout)
         uniform = uniform_all.loc[uniform_all["area"] == area]
         rolling = rolling_all.loc[rolling_all["area"] == area]
-        uniform_metric = evaluate_predictions(area_holdout, uniform, area=area)
         rolling_metric = evaluate_predictions(area_holdout, rolling, area=area)
-        interval = paired_mean_difference(
-            _draw_hits(area_holdout, ensemble, area),
-            _draw_hits(area_holdout, uniform, area),
-            resamples=selection.bootstrap_resamples,
-            seed=selection.bootstrap_seed,
-        )
-        area_results[area] = {
+
+        if version == "1.1":
+            uniform_metric = evaluate_uniform_baseline(area_holdout, area=area)
+            expected_hits = np.full(
+                int(area_holdout["draw_id"].nunique()),
+                expected_uniform_hits(area),
+                dtype=float,
+            )
+            interval = paired_mean_difference(
+                _draw_hits(area_holdout, ensemble, area),
+                expected_hits,
+                resamples=selection.bootstrap_resamples,
+                seed=selection.bootstrap_seed,
+            )
+            legacy_uniform_metric = evaluate_predictions(area_holdout, uniform, area=area)
+            legacy_interval = paired_mean_difference(
+                _draw_hits(area_holdout, ensemble, area),
+                _draw_hits(area_holdout, uniform, area),
+                resamples=selection.bootstrap_resamples,
+                seed=selection.bootstrap_seed,
+            )
+            legacy_fixed_ticket: dict[str, object] | None = {
+                "metrics": legacy_uniform_metric.to_dict(),
+                "paired_bootstrap_hits_vs_uniform": legacy_interval.to_dict(),
+            }
+        else:
+            uniform_metric = evaluate_predictions(area_holdout, uniform, area=area)
+            interval = paired_mean_difference(
+                _draw_hits(area_holdout, ensemble, area),
+                _draw_hits(area_holdout, uniform, area),
+                resamples=selection.bootstrap_resamples,
+                seed=selection.bootstrap_seed,
+            )
+            legacy_fixed_ticket = None
+
+        area_result: dict[str, object] = {
             "selection": {
                 "model": chosen.model,
                 "feature_set": chosen.feature_set,
@@ -198,9 +259,22 @@ def run_holdout_evaluation(
             },
             "paired_bootstrap_hits_vs_uniform": interval.to_dict(),
         }
+        if legacy_fixed_ticket is not None:
+            area_result["legacy_v1_fixed_ticket_uniform"] = legacy_fixed_ticket
+        area_results[area] = area_result
+
+    if version == "1.1":
+        schema_version = "1.1.0"
+        experiment_id = "holdout-v1.1"
+        supersedes: str | None = "holdout-v1"
+    else:
+        schema_version = "1.0.0"
+        experiment_id = "holdout-v1"
+        supersedes = None
+
     return HoldoutReport(
-        schema_version="1.0.0",
-        experiment_id="holdout-v1",
+        schema_version=schema_version,
+        experiment_id=experiment_id,
         selection_id=selection.selection_id,
         development_artifact_sha256=selection.development_artifact_sha256,
         data_sha256=hashlib.sha256(serialize_draws(draws)).hexdigest(),
@@ -208,6 +282,7 @@ def run_holdout_evaluation(
         holdout_start=selection.holdout_start.isoformat(),
         holdout_draw_count=int(holdout["draw_id"].nunique()),
         areas=area_results,
+        supersedes=supersedes,
     )
 
 

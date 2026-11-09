@@ -6,7 +6,7 @@
 
 ## Data
 
-NFD 歷年頁面，1,927 期，2008-01-24 至 2026-07-13。資料來源不是官方 API；專案保存 raw lineage、SHA-256、驗證結果與一筆具交叉來源的 2025-10-09 第二區修正。
+NFD 歷年頁面，凍結實驗時為 1,927 期（2008-01-24 至 2026-07-13；資料每週持續更新）。資料來源不是官方 API；專案保存 raw lineage、SHA-256、驗證結果與一筆具交叉來源的 2025-10-09 第二區修正。
 
 ## Models
 
@@ -14,7 +14,7 @@ Development 比較 Logistic Regression、Random Forest、LightGBM 與三個 base
 
 ## Results and limitations
 
-Holdout 點估計略高於 Uniform，但 paired bootstrap confidence intervals 跨 0，Rolling Frequency 也略高於模型。Lottery draws 被設計為隨機且歷史期數有限；feature search、model comparison 與 fold variance 都可能造成偶然高分。結果不支持可泛化的預測能力。
+Holdout-v1.1 點估計略高於 Uniform 理論期望值（第一區 0.970 vs 0.947、第二區 0.132 vs 0.125），但 paired bootstrap confidence intervals 均跨越 0（第一區 [-0.109, 0.155]、第二區 [-0.049, 0.064]），Historical Frequency（歷史累積頻率）baseline 也略高於模型。前瞻盲測（Forward Test Ledger）亦於開獎前鎖定選號進行無洩漏驗證。Lottery draws 被設計為隨機且歷史期數有限；feature search、model comparison 與 fold variance 都可能造成偶然高分。結果不支持可泛化的預測能力。
 
 ## Ethical communication
 

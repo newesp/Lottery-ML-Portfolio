@@ -1,0 +1,25 @@
+{
+  "aggregate": {
+    "mean_hits": {
+      "historical_frequency": {
+        "area1": 0.0,
+        "area2": 0.0
+      },
+      "model": {
+        "area1": 0.0,
+        "area2": 0.0
+      }
+    },
+    "resolved_count": 0,
+    "unpredicted_draws_since_start": 0
+  },
+  "entries": [],
+  "expected_hits_uniform": {
+    "area1": 0.947368,
+    "area2": 0.125
+  },
+  "latest_pending": null,
+  "protocol_id": "forward-v1",
+  "schema_version": "1.0.0",
+  "selection_id": "selection-v1"
+}

@@ -1,6 +1,7 @@
 import pandas as pd
 
 from lottery_ml.models.baselines import (
+    predict_historical_frequency,
     predict_rolling_frequency,
     predict_shuffled_history,
     predict_uniform,
@@ -38,3 +39,11 @@ def test_shuffled_history_preserves_each_draw_probability_multiset() -> None:
         expected = sorted(rolling.loc[rolling["area"] == area, "probability"])
         actual = sorted(shuffled.loc[shuffled["area"] == area, "probability"])
         assert actual == expected
+
+
+def test_historical_frequency_matches_legacy_rolling_frequency() -> None:
+    f = frame()
+    historical = predict_historical_frequency(f)
+    rolling = predict_rolling_frequency(f)
+    pd.testing.assert_frame_equal(historical, rolling)
+

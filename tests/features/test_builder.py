@@ -1,9 +1,12 @@
 from datetime import date
 from pathlib import Path
 
+import pandas as pd
+import pytest
+
 from lottery_ml.data.contracts import DrawRecord
 from lottery_ml.experiments.config import load_feature_config
-from lottery_ml.features.builder import build_candidate_rows
+from lottery_ml.features.builder import build_candidate_rows, build_next_draw_rows
 from lottery_ml.features.schema import feature_columns
 
 ROOT = Path(__file__).parents[2]
@@ -60,3 +63,35 @@ def test_feature_sets_are_ordered_and_progressive() -> None:
     assert set(frequency) < set(temporal)
     assert set(frequency_gap) | set(temporal) < set(full)
     assert len(full) == len(set(full)) == 46
+
+
+def test_next_rows_match_in_sample_rows() -> None:
+    config = load_feature_config(ROOT / "configs/features/v1.json")
+    all_draws = draws()
+
+    for k in range(1, len(all_draws)):
+        target_draw = all_draws[k]
+        next_rows = build_next_draw_rows(
+            all_draws[:k], target_draw.draw_date, target_draw.draw_id, config
+        )
+        in_sample = build_candidate_rows(all_draws[: k + 1], config)
+        expected_rows = (
+            in_sample.loc[in_sample["draw_id"] == target_draw.draw_id]
+            .drop(columns=["target"])
+            .reset_index(drop=True)
+        )
+        pd.testing.assert_frame_equal(next_rows, expected_rows, check_exact=True)
+
+
+def test_next_rows_reject_non_future_date() -> None:
+    config = load_feature_config(ROOT / "configs/features/v1.json")
+    all_draws = draws()
+
+    # Same date as last draw
+    with pytest.raises(ValueError, match="strictly after"):
+        build_next_draw_rows(all_draws, all_draws[-1].draw_date, "same-date", config)
+
+    # Earlier date than last draw
+    with pytest.raises(ValueError, match="strictly after"):
+        build_next_draw_rows(all_draws, all_draws[0].draw_date, "earlier-date", config)
+
