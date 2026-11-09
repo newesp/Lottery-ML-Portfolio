@@ -16,7 +16,11 @@ export default function ForwardPage() {
       <div className="page section-shell">
         <PageIntro
           eyebrow="FORWARD TEST ｜ 前瞻盲測"
-          title="開獎前鎖定預測，開獎後才對答案"
+          title={
+            <>
+              開獎前鎖定預測，<span className="inline-block">開獎後才對答案</span>
+            </>
+          }
         >
           <p>
             這套機制會在尚未開獎前，將機器學習模型的選號寫入公開且只增不減的帳本（<code>ledger.jsonl</code>），待開獎結果公布後再自動結算真實盲測成績。
@@ -37,7 +41,11 @@ export default function ForwardPage() {
     <div className="page section-shell">
       <PageIntro
         eyebrow="FORWARD TEST ｜ 前瞻盲測"
-        title="開獎前鎖定預測，開獎後才對答案"
+        title={
+          <>
+            開獎前鎖定預測，<span className="inline-block">開獎後才對答案</span>
+          </>
+        }
       >
         <p>
           為了徹底排除「事後諸葛」與資料洩漏的可能，此頁面的所有預測皆在開獎當晚 20:00 前由自動化排程算好並寫入公開帳本，開獎後再依據同一份帳本對獎結算。

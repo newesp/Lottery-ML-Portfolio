@@ -150,7 +150,11 @@ export default function EvaluationPage() {
     <div className="section-shell page">
       <PageIntro
         eyebrow={`LOCKED HOLDOUT · ${facts.holdoutStartYear}+ ｜ 封存盲測驗收`}
-        title="像正式大考一樣，定案後只開箱一次的總驗收"
+        title={
+          <>
+            像正式大考一樣，<span className="inline-block">定案後只開箱一次的總驗收</span>
+          </>
+        }
       >
         <p>
           模型架構與特徵組合先在開發階段選定，並以

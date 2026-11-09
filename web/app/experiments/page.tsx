@@ -9,7 +9,11 @@ export default function ExperimentsPage() {
     <div className="section-shell page wide">
       <PageIntro
         eyebrow="PRECOMPUTED EXPERIMENT MATRIX ｜ 預先算好的實驗矩陣"
-        title="自由切換條件，檢驗複雜模型是否真有優勢"
+        title={
+          <>
+            自由切換條件，<span className="inline-block">檢驗複雜模型是否真有優勢</span>
+          </>
+        }
       >
         <p>
           切換下方的號碼區域、評估指標與特徵組合，即可交叉比對{" "}

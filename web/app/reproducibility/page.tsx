@@ -8,7 +8,11 @@ export default function ReproPage() {
     <div className="section-shell page">
       <PageIntro
         eyebrow="REPRODUCIBILITY ｜ 可重現性與環境驗證"
-        title="網站上的每一個數字，都能在本機重新算出來"
+        title={
+          <>
+            網站上的每一個數字，<span className="inline-block">都能在本機重新算出來</span>
+          </>
+        }
       >
         <p>
           可重現性（Reproducibility）意味著任何人只要照著相同步驟執行，就能得到分毫不差的結果。本專案由 Python

@@ -331,6 +331,24 @@ main {
   max-width: var(--max-wide);
 }
 
+/* Headings & Text Wrap */
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.text-nowrap {
+  white-space: nowrap;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
 .page-intro {
   padding-bottom: 36px;
   border-bottom: 1px solid var(--line);
@@ -339,11 +357,12 @@ main {
 
 .page-intro h1 {
   margin: 0;
-  font-size: clamp(2.3rem, 4.5vw, 3.8rem);
-  line-height: 1.12;
+  font-size: clamp(2.1rem, 4vw, 3.5rem);
+  line-height: 1.18;
   letter-spacing: -0.035em;
   font-weight: 900;
   color: var(--navy);
+  text-wrap: balance;
 }
 
 .page-intro .lede {
@@ -791,6 +810,13 @@ main {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 70px;
+}
+
+.split h2 {
+  font-size: clamp(1.4rem, 2.3vw, 1.95rem);
+  line-height: 1.25;
+  margin: 0 0 20px;
+  text-wrap: balance;
 }
 
 .clean-list {

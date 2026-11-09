@@ -34,7 +34,11 @@ export default function FindingsPage() {
     <div className="section-shell page">
       <PageIntro
         eyebrow="FINDINGS & LIMITATIONS ｜ 結論與方法限制"
-        title="負結果的價值，在於誠實劃出能力的邊界"
+        title={
+          <>
+            負結果的價值，<span className="inline-block">在於誠實劃出能力的邊界</span>
+          </>
+        }
       >
         <p>
           這份案例研究不打算把隨機波動包裝成可持續的預測優勢（Alpha）。相反地，它透過嚴格的實驗設計來挑戰、甚至推翻模型自己的假設——在隨機性主導的題目裡，能夠清楚證明「模型沒有學到特殊規律」，本身就是工程嚴謹度的最佳展現。

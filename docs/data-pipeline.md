@@ -110,4 +110,4 @@ lottery-ml ingest --from-year 2008 --through-year 2026 --root .
 
 ## 自動化排程邊界
 
-GitHub Actions 於台灣時間每週一、週四 21:15（以及週二、週五 09:00 補抓時段）自動執行資料匯入，同時支援手動觸發（`workflow_dispatch`）。本機與 CI 環境共用同一套 CLI 程式，不維護兩套獨立的匯入邏輯。
+GitHub Actions 於台灣時間每週二、週五 09:00 自動執行資料匯入，同時支援手動觸發（`workflow_dispatch`）。本機與 CI 環境共用同一套 CLI 程式，不維護兩套獨立的匯入邏輯。

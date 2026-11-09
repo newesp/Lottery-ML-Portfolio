@@ -14,7 +14,14 @@ export default function DataPage() {
   const dataset = facts.dataset;
   return (
     <div className="section-shell page">
-      <PageIntro eyebrow="DATA LINEAGE ｜ 資料溯源與驗證" title="資料不是抓下來就能直接餵給模型">
+      <PageIntro
+        eyebrow="DATA LINEAGE ｜ 資料溯源與驗證"
+        title={
+          <>
+            資料不是抓下來，<span className="inline-block">就能直接餵給模型</span>
+          </>
+        }
+      >
         <p>
           歷年開獎紀錄取自 <NfdLink /> 年度頁面。資料管線會先解析早期的 Big5 編碼網頁、統一欄位格式並通過完整性檢查，最後才產出
           <RepoLink path="data/processed/power-lottery.json">標準資料集（Canonical Dataset）</RepoLink>

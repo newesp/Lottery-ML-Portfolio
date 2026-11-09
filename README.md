@@ -68,7 +68,7 @@ v1 以繁體中文與台灣慣用技術詞彙撰寫，並保留關鍵英文術�
 
 - `CI`：執行 Python 單元測試／Ruff／mypy，以及前端 TypeScript 型別檢查／ESLint／靜態建置
 - `Deploy GitHub Pages`：`main` 分支更新後自動建置並部署 `web/out`
-- `Update verified lottery data`：每週一、週四台灣時間 21:15 自動抓取最新開獎資料，週二、週五 09:00 補抓來源延遲；驗證通過後執行 `forward predict`，將下期預測以 Append-only 規則寫入前瞻盲測帳本
+- `Update verified lottery data`：每週二、週五台灣時間 09:00 自動抓取最新開獎資料；驗證通過後執行 `forward predict`，將下期預測以 Append-only 規則寫入前瞻盲測帳本
 
 ## 免責聲明
 

@@ -17,7 +17,7 @@ export function Metric({ value, label, note }: { value: string; label: string; n
   );
 }
 
-export function PageIntro({ eyebrow, title, children }: { eyebrow: string; title: string; children: ReactNode }) {
+export function PageIntro({ eyebrow, title, children }: { eyebrow: string; title: ReactNode; children: ReactNode }) {
   return (
     <header className="page-intro">
       <Eyebrow>{eyebrow}</Eyebrow>

@@ -59,7 +59,7 @@ export default function FeaturesPage() {
       </section>
       <section className="content-section split">
         <div>
-          <h2>Feature sets｜特徵組合</h2>
+          <h2>Feature sets ｜ <span className="inline-block">特徵組合</span></h2>
           <ul className="clean-list">
             <li>
               <b>frequency</b> — 僅使用歷史與近期出現頻率
@@ -78,7 +78,7 @@ export default function FeaturesPage() {
         <div>
           <h2>
             <RepoLink path="src/lottery_ml/models/pipelines.py">
-              Preprocessing｜建模前處理
+              Preprocessing ｜ <span className="inline-block">建模前處理</span>
             </RepoLink>
           </h2>
           <p className="body-copy">
