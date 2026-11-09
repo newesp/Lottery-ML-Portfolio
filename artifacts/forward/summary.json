@@ -13,12 +13,166 @@
     "resolved_count": 0,
     "unpredicted_draws_since_start": 0
   },
-  "entries": [],
+  "entries": [
+    {
+      "actual": null,
+      "assumed_target_date": "2026-11-12",
+      "cutoff_draw_id": "2026-11-09",
+      "hits": null,
+      "input_data_changed": false,
+      "picks": {
+        "historical_frequency": {
+          "area1": [
+            3,
+            4,
+            14,
+            15,
+            24,
+            38
+          ],
+          "area2": [
+            2
+          ]
+        },
+        "model": {
+          "area1": [
+            6,
+            9,
+            10,
+            16,
+            24,
+            30
+          ],
+          "area2": [
+            8
+          ]
+        }
+      },
+      "status": "pending",
+      "target_date_matched": true,
+      "target_draw_id": null
+    }
+  ],
   "expected_hits_uniform": {
     "area1": 0.947368,
     "area2": 0.125
   },
-  "latest_pending": null,
+  "latest_pending": {
+    "assumed_target_date": "2026-11-12",
+    "cutoff_draw_id": "2026-11-09",
+    "predictions": {
+      "historical_frequency": {
+        "area1": {
+          "picks": [
+            3,
+            4,
+            14,
+            15,
+            24,
+            38
+          ]
+        },
+        "area2": {
+          "picks": [
+            2
+          ]
+        }
+      },
+      "model": {
+        "area1": {
+          "picks": [
+            6,
+            9,
+            10,
+            16,
+            24,
+            30
+          ],
+          "top_scores": [
+            [
+              16,
+              0.242372
+            ],
+            [
+              6,
+              0.236854
+            ],
+            [
+              10,
+              0.231898
+            ],
+            [
+              30,
+              0.217792
+            ],
+            [
+              24,
+              0.209813
+            ],
+            [
+              9,
+              0.20745
+            ],
+            [
+              11,
+              0.207063
+            ],
+            [
+              19,
+              0.205426
+            ],
+            [
+              37,
+              0.204164
+            ],
+            [
+              34,
+              0.197401
+            ]
+          ]
+        },
+        "area2": {
+          "picks": [
+            8
+          ],
+          "top_scores": [
+            [
+              8,
+              0.183217
+            ],
+            [
+              4,
+              0.159146
+            ],
+            [
+              5,
+              0.148812
+            ],
+            [
+              2,
+              0.13473
+            ],
+            [
+              6,
+              0.133501
+            ],
+            [
+              1,
+              0.1314
+            ],
+            [
+              7,
+              0.118654
+            ],
+            [
+              3,
+              0.092898
+            ]
+          ]
+        }
+      }
+    }
+  },
   "protocol_id": "forward-v1",
   "schema_version": "1.0.0",
   "selection_id": "selection-v1"
