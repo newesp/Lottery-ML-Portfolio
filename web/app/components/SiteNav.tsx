@@ -34,7 +34,6 @@ export function SiteNav() {
               Lottery <b>ML Lab</b>
             </span>
           </Link>
-          <span className="brand-badge" title="版本與工程定位">v1.1 · EMPIRICAL ML</span>
         </div>
 
         <nav className="site-nav" aria-label="主要導覽">
