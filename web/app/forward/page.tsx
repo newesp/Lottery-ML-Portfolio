@@ -42,7 +42,7 @@ export default function ForwardPage() {
         <p>
           為了徹底排除「事後諸葛」與資料洩漏的可能，此頁面的所有預測皆在開獎當晚 20:00 前由自動化排程算好並寫入公開帳本，開獎後再依據同一份帳本對獎結算。
         </p>
-        <p style={{ marginTop: "12px", fontSize: "0.85rem", color: "var(--muted)" }}>
+        <p className="sub-note" style={{ marginTop: "12px", fontSize: "0.88rem", color: "var(--muted)" }}>
           原始預測紀錄存放於 <RepoLink path="artifacts/forward/ledger.jsonl">artifacts/forward/ledger.jsonl</RepoLink>（只增不減的 Append-only 帳本）。
         </p>
       </PageIntro>
@@ -55,35 +55,51 @@ export default function ForwardPage() {
         </div>
 
         {latest_pending ? (
-          <div className="lab" style={{ background: "white", padding: "30px" }}>
-            <p className="muted" style={{ margin: "0 0 20px" }}>
+          <div className="forward-dispatch-box">
+            <div className="dispatch-header">
+              <span className="live-pill">
+                <span className="live-pill-dot" />
+                LOCKED PENDING DRAW
+              </span>
+              <span className="dispatch-cutoff">
+                歷史基準期數：<code>{latest_pending.cutoff_draw_id}</code>
+              </span>
+            </div>
+
+            <p className="dispatch-desc">
               依據截至 {latest_pending.cutoff_draw_id} 的已驗證歷史資料，模型在開獎前預先鎖定的選號組合：
             </p>
 
             <div className="forward-row">
-              <span className="forward-row-label">模型選號（selection-v1 RF Ensemble）</span>
+              <span className="forward-row-label">
+                <b>模型選號</b>
+                <small>selection-v1 RF Ensemble</small>
+              </span>
               <div className="ball-group">
                 {latest_pending.predictions.model.area1.picks.map((n) => (
                   <NumberBall key={n} number={n} area="area1" size="lg" />
                 ))}
-                <span style={{ marginInline: "6px", color: "var(--muted)", fontWeight: 900 }}>+</span>
+                <span className="ball-sep" aria-hidden="true">+</span>
                 <NumberBall number={latest_pending.predictions.model.area2.picks[0]} area="area2" size="lg" />
               </div>
             </div>
 
-            <div className="forward-row" style={{ marginTop: "20px" }}>
-              <span className="forward-row-label">歷史累積頻率基準（Historical Frequency）</span>
+            <div className="forward-row baseline-row">
+              <span className="forward-row-label">
+                <b>歷史累積頻率</b>
+                <small>Historical Frequency</small>
+              </span>
               <div className="ball-group">
                 {latest_pending.predictions.historical_frequency.area1.picks.map((n) => (
                   <NumberBall key={n} number={n} area="area1" size="md" />
                 ))}
-                <span style={{ marginInline: "6px", color: "var(--muted)", fontWeight: 900 }}>+</span>
+                <span className="ball-sep" aria-hidden="true">+</span>
                 <NumberBall number={latest_pending.predictions.historical_frequency.area2.picks[0]} area="area2" size="md" />
               </div>
             </div>
 
-            <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: "1px solid var(--line)", fontSize: "0.85rem", color: "var(--muted)" }}>
-              隨機選號理論期望命中：第一區 {num(expected_hits_uniform.area1, 3)} 顆／第二區 {num(expected_hits_uniform.area2, 3)} 顆
+            <div className="dispatch-footer">
+              隨機選號理論期望命中：第一區 <b>{num(expected_hits_uniform.area1, 3)}</b> 顆／第二區 <b>{num(expected_hits_uniform.area2, 3)}</b> 顆
             </div>
           </div>
         ) : (
@@ -140,28 +156,28 @@ export default function ForwardPage() {
             <h2>模型當期評分最高的前十個號碼</h2>
           </div>
           <div className="table-scroll">
-            <table>
+            <table className="lab-table">
               <thead>
                 <tr>
-                  <th>名次</th>
-                  <th>號碼</th>
-                  <th>模型預測機率</th>
-                  <th>選號狀態</th>
+                  <th scope="col">名次</th>
+                  <th scope="col">號碼</th>
+                  <th scope="col">模型預測機率</th>
+                  <th scope="col">選號狀態</th>
                 </tr>
               </thead>
               <tbody>
                 {latest_pending.predictions.model.area1.top_scores.map(([number, score], index) => {
                   const isPicked = latest_pending.predictions.model.area1.picks.includes(number);
                   return (
-                    <tr key={number}>
-                      <td>#{index + 1}</td>
+                    <tr key={number} className={isPicked ? "picked-row" : ""}>
+                      <td className="rank-cell">#{index + 1}</td>
                       <td>
                         <NumberBall number={number} area="area1" size="sm" />
                       </td>
-                      <td><code>{num(score, 6)}</code></td>
+                      <td style={{ fontFamily: "var(--font-mono)" }}><code>{num(score, 6)}</code></td>
                       <td>
                         {isPicked ? (
-                          <span style={{ fontWeight: 800, color: "#168e8a" }}>★ 當期選號（Top 6）</span>
+                          <span className="picked-badge">★ 當期選號（Top 6）</span>
                         ) : (
                           <span className="muted">備選候選碼</span>
                         )}
@@ -186,16 +202,16 @@ export default function ForwardPage() {
           <p className="muted">目前尚無歷史盲測紀錄。</p>
         ) : (
           <div className="table-scroll">
-            <table>
+            <table className="lab-table audit-table">
               <thead>
                 <tr>
-                  <th>目標開獎日</th>
-                  <th>狀態</th>
-                  <th>實際開獎號碼</th>
-                  <th>模型預測選號</th>
-                  <th>模型命中</th>
-                  <th>歷史累積頻率選號</th>
-                  <th>Baseline 命中</th>
+                  <th scope="col">目標開獎日</th>
+                  <th scope="col">狀態</th>
+                  <th scope="col">實際開獎號碼</th>
+                  <th scope="col">模型預測選號</th>
+                  <th scope="col">模型命中</th>
+                  <th scope="col">歷史頻率選號</th>
+                  <th scope="col">Baseline 命中</th>
                 </tr>
               </thead>
               <tbody>
@@ -205,29 +221,22 @@ export default function ForwardPage() {
                   const isResolved = entry.status === "resolved";
 
                   return (
-                    <tr key={entry.cutoff_draw_id}>
+                    <tr key={entry.cutoff_draw_id} className={isResolved ? "resolved-row" : "pending-row"}>
                       <td>
                         <strong>{entry.assumed_target_date}</strong>
                         {!entry.target_date_matched && (
-                          <span style={{ display: "block", fontSize: "0.7rem", color: "var(--orange)" }}>
+                          <span className="audit-warning-text">
                             (實際開獎日 {entry.target_draw_id})
                           </span>
                         )}
                         {entry.input_data_changed && (
-                          <span style={{ display: "block", fontSize: "0.7rem", color: "var(--orange)" }}>
+                          <span className="audit-warning-text">
                             (歷史資料曾修正)
                           </span>
                         )}
                       </td>
                       <td>
-                        <span style={{
-                          padding: "2px 6px",
-                          borderRadius: "4px",
-                          fontSize: "0.72rem",
-                          fontWeight: 800,
-                          background: isResolved ? "#e2f7cf" : "#fff3e0",
-                          color: isResolved ? "#2f5c11" : "#a35200"
-                        }}>
+                        <span className={`status-pill ${isResolved ? "resolved" : "pending"}`}>
                           {isResolved ? "已開獎結算" : "待開獎"}
                         </span>
                       </td>
@@ -237,7 +246,7 @@ export default function ForwardPage() {
                             {actualA1.map((n) => (
                               <NumberBall key={n} number={n} area="area1" size="sm" />
                             ))}
-                            <span style={{ marginInline: "2px", fontWeight: 900 }}>+</span>
+                            <span className="ball-sep" aria-hidden="true">+</span>
                             {actualA2 !== null && <NumberBall number={actualA2} area="area2" size="sm" />}
                           </div>
                         ) : (
@@ -255,7 +264,7 @@ export default function ForwardPage() {
                               size="sm"
                             />
                           ))}
-                          <span style={{ marginInline: "2px", fontWeight: 900 }}>+</span>
+                          <span className="ball-sep" aria-hidden="true">+</span>
                           <NumberBall
                             number={entry.picks.model.area2[0]}
                             area="area2"
@@ -266,8 +275,8 @@ export default function ForwardPage() {
                       </td>
                       <td>
                         {entry.hits ? (
-                          <span>
-                            第一區 <b>{entry.hits.model.area1}</b> 顆 / 第二區 <b>{entry.hits.model.area2}</b> 顆
+                          <span className="hits-tag">
+                            第 1 區 <b>{entry.hits.model.area1}</b> 顆 / 第 2 區 <b>{entry.hits.model.area2}</b> 顆
                           </span>
                         ) : (
                           <span className="muted">—</span>
@@ -284,7 +293,7 @@ export default function ForwardPage() {
                               size="sm"
                             />
                           ))}
-                          <span style={{ marginInline: "2px", fontWeight: 900 }}>+</span>
+                          <span className="ball-sep" aria-hidden="true">+</span>
                           <NumberBall
                             number={entry.picks.historical_frequency.area2[0]}
                             area="area2"
@@ -295,8 +304,8 @@ export default function ForwardPage() {
                       </td>
                       <td>
                         {entry.hits ? (
-                          <span>
-                            第一區 <b>{entry.hits.historical_frequency.area1}</b> 顆 / 第二區 <b>{entry.hits.historical_frequency.area2}</b> 顆
+                          <span className="hits-tag">
+                            第 1 區 <b>{entry.hits.historical_frequency.area1}</b> 顆 / 第 2 區 <b>{entry.hits.historical_frequency.area2}</b> 顆
                           </span>
                         ) : (
                           <span className="muted">—</span>

@@ -23,50 +23,98 @@ function AreaResult({
   const rollingHits = num(data.baselines.rolling_frequency.average_hits);
   const verdict = ciVerdict(ci.lower, ci.upper);
 
+  // Compute percentage positions for forest plot on scale [-0.25, 0.25]
+  const domainMin = -0.25;
+  const domainMax = 0.25;
+  const toPct = (val: number) => {
+    const clamped = Math.max(domainMin, Math.min(domainMax, val));
+    return ((clamped - domainMin) / (domainMax - domainMin)) * 100;
+  };
+
+  const zeroPct = toPct(0);
+  const lowerPct = toPct(ci.lower);
+  const upperPct = toPct(ci.upper);
+  const estimatePct = toPct(ci.estimate);
+
   return (
     <article className="result-card">
-      <p className="eyebrow">{name}</p>
-      <h2>{modelLabel(data.selection.model)}</h2>
-      <p className="muted">
-        {featureLabel(data.selection.feature_set)} · {seedCount} 組隨機起點集成（{seedCount}-seed Ensemble）
+      <div className="result-card-header">
+        <p className="eyebrow">{name}</p>
+        <span className="seed-badge">{seedCount}-Seed Ensemble</span>
+      </div>
+
+      <h2 className="result-model-title">{modelLabel(data.selection.model)}</h2>
+      <p className="muted result-feature-sub">
+        特徵組合：<b>{featureLabel(data.selection.feature_set)}</b> · 多隨機起點集成
       </p>
+
       <div className="result-metrics">
         <Metric
           value={modelHits}
-          label="Model hits｜模型選號"
-          note={`每期平均對中 ${modelHits} 顆`}
+          label="模型平均命中"
+          note={`每期平均挑中 ${modelHits} 顆`}
         />
         <Metric
           value={uniformHits}
-          label="Uniform hits｜隨機期望值"
+          label="隨機選號期望值"
           note={`每期理論期望 ${uniformHits} 顆`}
         />
         <Metric
           value={rollingHits}
-          label="Historical hits｜歷史常開基準"
-          note={`每期平均對中 ${rollingHits} 顆`}
+          label="歷史常開基準"
+          note={`每期平均命中 ${rollingHits} 顆`}
         />
       </div>
-      <div className="ci">
-        <span>Δ hits vs Uniform｜模型相對隨機選號的命中差距</span>
-        <strong>
-          {ci.estimate > 0 ? "+" : ""}
-          {num(ci.estimate)}
-        </strong>
-        <div className="ci-line">
-          <i />
-          <b
-            style={{
-              left: `${Math.max(
-                0,
-                Math.min(100, (-ci.lower / (ci.upper - ci.lower)) * 100)
-              )}%`,
-            }}
-          />
+
+      <div className="ci-block" role="region" aria-label="成對抽樣信賴區間檢驗">
+        <div className="ci-header">
+          <span className="ci-label">Δ hits vs Uniform（相對隨機選號差距）</span>
+          <strong className="ci-diff-number">
+            {ci.estimate > 0 ? "+" : ""}
+            {num(ci.estimate, 3)} 顆
+          </strong>
         </div>
-        <small>
-          95% 信賴區間 [{num(ci.lower)}, {num(ci.upper)}]
-        </small>
+
+        {/* Scientific Forest Plot Visualizer */}
+        <div className="forest-plot-container">
+          <div className="forest-plot-labels">
+            <span>落後隨機 ({domainMin})</span>
+            <span className="forest-zero-label">基準線 (0.00)</span>
+            <span>領先隨機 (+{domainMax})</span>
+          </div>
+
+          <div className="forest-plot-track">
+            {/* Zero vertical line */}
+            <div
+              className="forest-zero-line"
+              style={{ left: `${zeroPct}%` }}
+              title="隨機期望值基準線 (0.0)"
+            />
+
+            {/* Shaded confidence interval band */}
+            <div
+              className="forest-ci-band"
+              style={{
+                left: `${lowerPct}%`,
+                width: `${Math.max(4, upperPct - lowerPct)}%`,
+              }}
+            />
+
+            {/* Point estimate marker */}
+            <div
+              className="forest-estimate-dot"
+              style={{ left: `${estimatePct}%` }}
+              title={`點估計值：${ci.estimate > 0 ? "+" : ""}${num(ci.estimate, 3)}`}
+            />
+          </div>
+
+          <div className="forest-ci-bounds">
+            <span className="bound-tag">Lower: {num(ci.lower, 3)}</span>
+            <span className="verdict-pill neutral">95% CI 跨越 0 · 無統計顯著優勢</span>
+            <span className="bound-tag">Upper: +{num(ci.upper, 3)}</span>
+          </div>
+        </div>
+
         <p className="ci-explanation">{ciExplanation(verdict)}</p>
       </div>
     </article>
@@ -127,7 +175,7 @@ export default function EvaluationPage() {
         />
       </div>
 
-      <p className="muted text-sm">
+      <p className="muted" style={{ fontSize: "0.85rem", margin: "16px 0 32px" }}>
         註：結果檔中的基準欄位鍵值沿用 v1 命名 <code>rolling_frequency</code>，實際演算法為依歷史累積出現率排序（Historical Frequency）。
       </p>
 
