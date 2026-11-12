@@ -1072,13 +1072,32 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Dispatch Box on Forward Page */
+.forward-dispatch-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 18px;
+}
+
+@media (max-width: 992px) {
+  .forward-dispatch-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .forward-dispatch-box {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 6px;
-  padding: 30px;
+  padding: 28px;
   box-shadow: var(--shadow-sm);
-  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.forward-dispatch-box.predict-box {
+  border-color: var(--navy-border);
+  box-shadow: var(--shadow-md);
 }
 
 .dispatch-header {
@@ -1088,6 +1107,27 @@ h1, h2, h3, h4, h5, h6 {
   gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 12px;
+}
+
+.dispatch-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dispatch-subhead {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dispatch-title {
+  font-size: 1.18rem;
+  font-weight: 800;
+  color: var(--navy);
+  margin: 0;
 }
 
 .forward-dispatch-box .live-pill {
@@ -1108,31 +1148,32 @@ h1, h2, h3, h4, h5, h6 {
 
 .dispatch-desc {
   color: var(--muted);
-  margin: 0 0 24px;
-  font-size: 0.95rem;
+  margin: 0 0 20px;
+  font-size: 0.92rem;
+  line-height: 1.5;
 }
 
 .forward-row {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin: 16px 0;
+  margin: 14px 0;
   flex-wrap: wrap;
 }
 
 .forward-row.cutoff-row {
   margin-top: 0;
-  padding-bottom: 16px;
+  padding-bottom: 14px;
   border-bottom: 1px dashed var(--line);
 }
 
 .forward-row.baseline-row {
-  padding-top: 16px;
+  padding-top: 14px;
   border-top: 1px dashed var(--line);
 }
 
 .forward-row-label {
-  min-width: 180px;
+  min-width: 130px;
   display: flex;
   flex-direction: column;
 }
@@ -1148,10 +1189,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dispatch-footer {
-  margin-top: 24px;
+  margin-top: auto;
   padding-top: 16px;
   border-top: 1px solid var(--line);
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   color: var(--muted);
 }
 
