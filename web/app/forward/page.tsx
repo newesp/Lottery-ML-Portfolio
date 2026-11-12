@@ -93,7 +93,7 @@ export default function ForwardPage() {
               </p>
 
               {/* 開獎號碼 */}
-              <div className="forward-row cutoff-row">
+              <div className="forward-row">
                 <span className="forward-row-label">
                   <b>開獎號碼</b>
                   <small>本期實際開出結果</small>
@@ -141,14 +141,14 @@ export default function ForwardPage() {
                     />
                   </div>
                 ) : (
-                  <span className="muted font-mono" style={{ fontSize: "0.85rem" }}>
-                    盲測起始基準期（開獎前未預先鎖定預測）
-                  </span>
+                  <div>
+                    <span className="status-pill neutral">盲測起始基準期（開獎前未預先鎖定預測）</span>
+                  </div>
                 )}
               </div>
 
               {/* 歷史累積頻率 */}
-              <div className="forward-row baseline-row">
+              <div className="forward-row">
                 <span className="forward-row-label">
                   <b>歷史累積頻率</b>
                   <small>
@@ -177,9 +177,9 @@ export default function ForwardPage() {
                     />
                   </div>
                 ) : (
-                  <span className="muted font-mono" style={{ fontSize: "0.85rem" }}>
-                    盲測起始基準期
-                  </span>
+                  <div>
+                    <span className="status-pill neutral">盲測起始基準期</span>
+                  </div>
                 )}
               </div>
 
@@ -214,7 +214,7 @@ export default function ForwardPage() {
               </p>
 
               {/* 開獎號碼 */}
-              <div className="forward-row cutoff-row">
+              <div className="forward-row">
                 <span className="forward-row-label">
                   <b>開獎號碼</b>
                   <small>開獎後自動結算</small>
@@ -232,15 +232,15 @@ export default function ForwardPage() {
                 </span>
                 <div className="ball-group">
                   {latest_pending.predictions.model.area1.picks.map((n) => (
-                    <NumberBall key={n} number={n} area="area1" size="lg" />
+                    <NumberBall key={n} number={n} area="area1" size="md" />
                   ))}
                   <span className="ball-sep" aria-hidden="true">+</span>
-                  <NumberBall number={latest_pending.predictions.model.area2.picks[0]} area="area2" size="lg" />
+                  <NumberBall number={latest_pending.predictions.model.area2.picks[0]} area="area2" size="md" />
                 </div>
               </div>
 
               {/* 歷史累積頻率 */}
-              <div className="forward-row baseline-row">
+              <div className="forward-row">
                 <span className="forward-row-label">
                   <b>歷史累積頻率</b>
                   <small>Historical Frequency</small>
