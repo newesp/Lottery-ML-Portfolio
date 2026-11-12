@@ -34,9 +34,15 @@ export type ForwardEntry = {
   } | null;
 };
 
+export type CutoffActual = {
+  area1: number[];
+  area2: number;
+};
+
 export type LatestPending = {
   cutoff_draw_id: string;
   assumed_target_date: string;
+  cutoff_actual?: CutoffActual | null;
   predictions: {
     model: {
       area1: {
@@ -84,6 +90,40 @@ export type ForwardSummary = {
     unpredicted_draws_since_start: number;
   };
 };
+
+function getCutoffActualFromDataset(drawId: string): CutoffActual | null {
+  const candidatePaths = [
+    path.join(process.cwd(), "..", "data", "processed", "power-lottery.json"),
+    path.join(process.cwd(), "data", "processed", "power-lottery.json"),
+  ];
+
+  for (const candidate of candidatePaths) {
+    if (fs.existsSync(candidate)) {
+      try {
+        const raw = JSON.parse(fs.readFileSync(candidate, "utf-8"));
+        if (Array.isArray(raw?.draws)) {
+          const found = raw.draws.find(
+            (d: { draw_id?: string; draw_date?: string }) =>
+              d.draw_id === drawId || d.draw_date === drawId
+          );
+          if (
+            found &&
+            Array.isArray(found.area1) &&
+            typeof found.area2 === "number"
+          ) {
+            return {
+              area1: found.area1,
+              area2: found.area2,
+            };
+          }
+        }
+      } catch {
+        // Fallback gracefully
+      }
+    }
+  }
+  return null;
+}
 
 export function getForwardSummary(): ForwardSummary | null {
   const candidatePaths = [
@@ -138,5 +178,12 @@ export function getForwardSummary(): ForwardSummary | null {
     throw new Error(`Unsupported forward summary schema_version: ${obj.schema_version}`);
   }
 
-  return parsed as ForwardSummary;
+  const result = parsed as ForwardSummary;
+  if (result.latest_pending && !result.latest_pending.cutoff_actual) {
+    result.latest_pending.cutoff_actual = getCutoffActualFromDataset(
+      result.latest_pending.cutoff_draw_id
+    );
+  }
+
+  return result;
 }

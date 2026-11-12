@@ -78,6 +78,22 @@ export default function ForwardPage() {
               依據截至 {latest_pending.cutoff_draw_id} 的已驗證歷史資料，模型在開獎前預先鎖定的選號組合：
             </p>
 
+            {latest_pending.cutoff_actual && (
+              <div className="forward-row cutoff-row">
+                <span className="forward-row-label">
+                  <b>{latest_pending.cutoff_draw_id} 期開獎號碼</b>
+                  <small>歷史基準期開獎結果</small>
+                </span>
+                <div className="ball-group">
+                  {latest_pending.cutoff_actual.area1.map((n) => (
+                    <NumberBall key={n} number={n} area="area1" size="md" />
+                  ))}
+                  <span className="ball-sep" aria-hidden="true">+</span>
+                  <NumberBall number={latest_pending.cutoff_actual.area2} area="area2" size="md" />
+                </div>
+              </div>
+            )}
+
             <div className="forward-row">
               <span className="forward-row-label">
                 <b>模型選號</b>

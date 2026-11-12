@@ -1120,13 +1120,19 @@ h1, h2, h3, h4, h5, h6 {
   flex-wrap: wrap;
 }
 
+.forward-row.cutoff-row {
+  margin-top: 0;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed var(--line);
+}
+
 .forward-row.baseline-row {
   padding-top: 16px;
   border-top: 1px dashed var(--line);
 }
 
 .forward-row-label {
-  min-width: 170px;
+  min-width: 180px;
   display: flex;
   flex-direction: column;
 }

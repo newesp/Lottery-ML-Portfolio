@@ -59,6 +59,17 @@
   },
   "latest_pending": {
     "assumed_target_date": "2026-11-12",
+    "cutoff_actual": {
+      "area1": [
+        6,
+        20,
+        27,
+        28,
+        35,
+        36
+      ],
+      "area2": 2
+    },
     "cutoff_draw_id": "2026-11-09",
     "predictions": {
       "historical_frequency": {

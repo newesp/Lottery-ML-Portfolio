@@ -193,8 +193,18 @@ def build_summary(
             target_date_matched = True
             actual: dict[str, Any] | None = None
             hits: dict[str, Any] | None = None
+            cutoff_draw = draws_by_id.get(str(entry["cutoff_draw_id"]))
+            cutoff_actual = (
+                {
+                    "area1": list(cutoff_draw.area1),
+                    "area2": cutoff_draw.area2,
+                }
+                if cutoff_draw
+                else None
+            )
             latest_pending = {
                 "cutoff_draw_id": str(entry["cutoff_draw_id"]),
+                "cutoff_actual": cutoff_actual,
                 "assumed_target_date": assumed_target_date,
                 "predictions": entry["predictions"],
             }
