@@ -1,0 +1,34 @@
+{
+  "corrections_applied": [
+    "nfd-2025-10-09-area2"
+  ],
+  "date_max": "2026-11-12",
+  "date_min": "2008-01-24",
+  "draw_count": 1962,
+  "fetched_at": "2026-11-13T15:35:18.788918+08:00",
+  "git_commit": "76b2b4f63f16e61423fde91574677581aa5403ff",
+  "schema_version": "1.0.0",
+  "sha256": "9c3572b6cf70290731e6155805e2a9009a48237d0bd0b800ef9fd1314ee6270e",
+  "source_urls": [
+    "https://www.nfd.com.tw/lottery/power-38/2008.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2009.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2010.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2011.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2012.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2013.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2014.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2015.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2016.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2017.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2018.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2019.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2020.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2021.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2022.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2023.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2024.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2025.htm",
+    "https://www.nfd.com.tw/lottery/power-38/2026.htm"
+  ],
+  "validation_status": "verified"
+}

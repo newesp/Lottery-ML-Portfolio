@@ -2,23 +2,42 @@
   "aggregate": {
     "mean_hits": {
       "historical_frequency": {
-        "area1": 0.0,
-        "area2": 0.0
+        "area1": 1.0,
+        "area2": 1.0
       },
       "model": {
-        "area1": 0.0,
+        "area1": 1.0,
         "area2": 0.0
       }
     },
-    "resolved_count": 0,
+    "resolved_count": 1,
     "unpredicted_draws_since_start": 0
   },
   "entries": [
     {
-      "actual": null,
+      "actual": {
+        "area1": [
+          7,
+          9,
+          15,
+          23,
+          25,
+          35
+        ],
+        "area2": 2
+      },
       "assumed_target_date": "2026-11-12",
       "cutoff_draw_id": "2026-11-09",
-      "hits": null,
+      "hits": {
+        "historical_frequency": {
+          "area1": 1,
+          "area2": 1
+        },
+        "model": {
+          "area1": 1,
+          "area2": 0
+        }
+      },
       "input_data_changed": false,
       "picks": {
         "historical_frequency": {
@@ -48,6 +67,44 @@
           ]
         }
       },
+      "status": "resolved",
+      "target_date_matched": true,
+      "target_draw_id": "2026-11-12"
+    },
+    {
+      "actual": null,
+      "assumed_target_date": "2026-11-16",
+      "cutoff_draw_id": "2026-11-12",
+      "hits": null,
+      "input_data_changed": false,
+      "picks": {
+        "historical_frequency": {
+          "area1": [
+            3,
+            4,
+            14,
+            15,
+            24,
+            38
+          ],
+          "area2": [
+            2
+          ]
+        },
+        "model": {
+          "area1": [
+            3,
+            9,
+            12,
+            15,
+            16,
+            35
+          ],
+          "area2": [
+            2
+          ]
+        }
+      },
       "status": "pending",
       "target_date_matched": true,
       "target_draw_id": null
@@ -58,19 +115,19 @@
     "area2": 0.125
   },
   "latest_pending": {
-    "assumed_target_date": "2026-11-12",
+    "assumed_target_date": "2026-11-16",
     "cutoff_actual": {
       "area1": [
-        6,
-        20,
-        27,
-        28,
-        35,
-        36
+        7,
+        9,
+        15,
+        23,
+        25,
+        35
       ],
       "area2": 2
     },
-    "cutoff_draw_id": "2026-11-09",
+    "cutoff_draw_id": "2026-11-12",
     "predictions": {
       "historical_frequency": {
         "area1": {
@@ -92,92 +149,92 @@
       "model": {
         "area1": {
           "picks": [
-            6,
+            3,
             9,
-            10,
+            12,
+            15,
             16,
-            24,
-            30
+            35
           ],
           "top_scores": [
             [
-              16,
-              0.242372
+              35,
+              0.278415
             ],
             [
-              6,
-              0.236854
+              15,
+              0.249183
             ],
             [
-              10,
-              0.231898
-            ],
-            [
-              30,
-              0.217792
-            ],
-            [
-              24,
-              0.209813
+              12,
+              0.238801
             ],
             [
               9,
-              0.20745
+              0.234299
             ],
             [
-              11,
-              0.207063
+              3,
+              0.22548
             ],
             [
-              19,
-              0.205426
+              16,
+              0.219747
             ],
             [
-              37,
-              0.204164
+              7,
+              0.207209
             ],
             [
-              34,
-              0.197401
+              25,
+              0.20669
+            ],
+            [
+              24,
+              0.2043
+            ],
+            [
+              5,
+              0.203091
             ]
           ]
         },
         "area2": {
           "picks": [
-            8
+            2
           ],
           "top_scores": [
             [
-              8,
-              0.183217
+              2,
+              0.204015
             ],
             [
-              4,
-              0.159146
+              8,
+              0.188836
             ],
             [
               5,
-              0.148812
+              0.16142
             ],
             [
-              2,
-              0.13473
+              4,
+              0.152469
             ],
             [
               6,
-              0.133501
+              0.130252
             ],
             [
               1,
-              0.1314
+              0.126545
             ],
             [
               7,
-              0.118654
+              0.107338
             ],
             [
               3,
-              0.092898
+              0.087633
             ]
           ]
         }
