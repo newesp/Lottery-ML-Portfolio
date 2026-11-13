@@ -2,7 +2,8 @@ name: Update verified lottery data
 on:
   # Keep in sync with web/app/lib/constants.ts SCHEDULE
   schedule:
-    - cron: "0 1 * * 2,5"     # 週二、週五 09:00 Taipei
+    - cron: "17 1 * * 2,5"     # 週二、週五 09:17 Taipei（避開整點尖峰）
+    - cron: "17 4 * * 2,5"     # 週二、週五 12:17 Taipei（備援複檢）
   workflow_dispatch:
 permissions:
   contents: write

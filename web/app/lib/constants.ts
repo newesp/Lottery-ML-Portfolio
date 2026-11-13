@@ -12,9 +12,9 @@ export const GAME = {
 } as const;
 
 export const SCHEDULE = {
-  regular: "每週二、週五台灣時間 09:00",
-  description: "每週二、週五台灣時間 09:00",
-  crons: ["0 1 * * 2,5"],
+  regular: "每週二、週五台灣時間 09:17（12:17 複檢）",
+  description: "每週二、週五台灣時間 09:17（並於 12:17 複檢）",
+  crons: ["17 1 * * 2,5", "17 4 * * 2,5"],
 } as const;
 
 // Column counts defined in src/lottery_ml/features/schema.py

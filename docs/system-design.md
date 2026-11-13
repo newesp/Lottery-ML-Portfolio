@@ -24,7 +24,7 @@ NFD 年度 Big5 HTML
 
 ## 自動更新與防護策略
 
-- GitHub Actions 於每週二、週五台灣時間 09:00 自動執行資料匯入（Ingestion）。
+- GitHub Actions 於每週二、週五台灣時間 09:17（並於 12:17 複檢）自動執行資料匯入（Ingestion）。
 - 只要任何一項資料檢核未通過，管線便立即中止，不會覆寫現有正式資料集，絕不留下更新一半的半成品。
 - 若來源資料內容未變，系統不會建立重複快照，也不會產生無意義的 Git commit。
 - 資料更新通過後，排程會自動執行 `lottery-ml forward predict`，在下一期開獎前將模型選號寫入 `artifacts/forward/ledger.jsonl`，並推導出 `summary.json`；CI 流程透過 `git diff --numstat` 嚴格把關，確保帳本只能新增紀錄、無法刪改過往內容。
