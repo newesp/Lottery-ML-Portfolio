@@ -2,15 +2,15 @@
   "aggregate": {
     "mean_hits": {
       "historical_frequency": {
-        "area1": 1.5,
-        "area2": 1.0
+        "area1": 1.0,
+        "area2": 0.666667
       },
       "model": {
         "area1": 1.0,
-        "area2": 0.5
+        "area2": 0.333333
       }
     },
-    "resolved_count": 2,
+    "resolved_count": 3,
     "unpredicted_draws_since_start": 0
   },
   "entries": [
@@ -129,10 +129,29 @@
       "target_draw_id": "2026-11-16"
     },
     {
-      "actual": null,
+      "actual": {
+        "area1": [
+          1,
+          12,
+          13,
+          18,
+          30,
+          33
+        ],
+        "area2": 3
+      },
       "assumed_target_date": "2026-11-19",
       "cutoff_draw_id": "2026-11-16",
-      "hits": null,
+      "hits": {
+        "historical_frequency": {
+          "area1": 0,
+          "area2": 0
+        },
+        "model": {
+          "area1": 1,
+          "area2": 0
+        }
+      },
       "input_data_changed": false,
       "picks": {
         "historical_frequency": {
@@ -162,6 +181,44 @@
           ]
         }
       },
+      "status": "resolved",
+      "target_date_matched": true,
+      "target_draw_id": "2026-11-19"
+    },
+    {
+      "actual": null,
+      "assumed_target_date": "2026-11-23",
+      "cutoff_draw_id": "2026-11-19",
+      "hits": null,
+      "input_data_changed": false,
+      "picks": {
+        "historical_frequency": {
+          "area1": [
+            3,
+            4,
+            7,
+            14,
+            24,
+            38
+          ],
+          "area2": [
+            2
+          ]
+        },
+        "model": {
+          "area1": [
+            1,
+            5,
+            7,
+            8,
+            9,
+            11
+          ],
+          "area2": [
+            2
+          ]
+        }
+      },
       "status": "pending",
       "target_date_matched": true,
       "target_draw_id": null
@@ -172,19 +229,19 @@
     "area2": 0.125
   },
   "latest_pending": {
-    "assumed_target_date": "2026-11-19",
+    "assumed_target_date": "2026-11-23",
     "cutoff_actual": {
       "area1": [
-        2,
-        3,
-        7,
-        8,
-        14,
-        28
+        1,
+        12,
+        13,
+        18,
+        30,
+        33
       ],
-      "area2": 2
+      "area2": 3
     },
-    "cutoff_draw_id": "2026-11-16",
+    "cutoff_draw_id": "2026-11-19",
     "predictions": {
       "historical_frequency": {
         "area1": {
@@ -206,53 +263,53 @@
       "model": {
         "area1": {
           "picks": [
+            1,
             5,
+            7,
             8,
             9,
-            15,
-            30,
-            35
+            11
           ],
           "top_scores": [
             [
               5,
-              0.260647
+              0.237064
             ],
             [
               9,
-              0.239488
-            ],
-            [
-              15,
-              0.233063
-            ],
-            [
-              8,
-              0.221535
-            ],
-            [
-              35,
-              0.218456
-            ],
-            [
-              30,
-              0.217808
-            ],
-            [
-              12,
-              0.212021
-            ],
-            [
-              7,
-              0.211696
-            ],
-            [
-              16,
-              0.206589
+              0.234845
             ],
             [
               1,
-              0.204786
+              0.231881
+            ],
+            [
+              8,
+              0.217272
+            ],
+            [
+              11,
+              0.209112
+            ],
+            [
+              7,
+              0.208244
+            ],
+            [
+              16,
+              0.20447
+            ],
+            [
+              12,
+              0.196708
+            ],
+            [
+              10,
+              0.191715
+            ],
+            [
+              27,
+              0.189735
             ]
           ]
         },
@@ -263,35 +320,35 @@
           "top_scores": [
             [
               2,
-              0.209852
+              0.188823
             ],
             [
               8,
-              0.175397
-            ],
-            [
-              4,
-              0.141117
-            ],
-            [
-              5,
-              0.139429
-            ],
-            [
-              1,
-              0.136725
-            ],
-            [
-              7,
-              0.134728
-            ],
-            [
-              6,
-              0.128914
+              0.160099
             ],
             [
               3,
-              0.118739
+              0.148009
+            ],
+            [
+              1,
+              0.142475
+            ],
+            [
+              5,
+              0.140042
+            ],
+            [
+              7,
+              0.133598
+            ],
+            [
+              6,
+              0.12897
+            ],
+            [
+              4,
+              0.110392
             ]
           ]
         }
