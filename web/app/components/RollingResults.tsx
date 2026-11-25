@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { getSiteFacts } from "../lib/facts";
 import { NumberBall } from "./NumberBall";
 import { ReplayPicker } from "./ReplayPicker";
 import {
@@ -63,10 +64,11 @@ function signedPctPoints(value: number): string {
 }
 
 function VersionLegend() {
+  const startYear = getSiteFacts().dataset.date_min_year;
   return (
     <div className="rolling-legend" role="note" aria-label="版本對照說明">
       <span>
-        <strong>v1（全部歷史）</strong>：以 2008 年至今全部開獎紀錄訓練，為目前現役正式版。
+        <strong>v1（全部歷史）</strong>：以 {startYear} 年至今全部開獎紀錄訓練，為目前現役正式版。
       </span>
       <span>
         <strong>v2（近 8 年）</strong>：僅取最近 8 年開獎紀錄每期重訓，為候選對照版。
