@@ -74,11 +74,16 @@ export function Grid({
   caption,
   headings,
   rows,
+  alignRight = [],
+  colWidths,
 }: {
   caption: string;
   headings: string[];
   rows: ReactNode[][];
+  alignRight?: number[];
+  colWidths?: string[];
 }) {
+  const rightSet = new Set(alignRight);
   return (
     <div className="rolling-grid-wrap">
       <div className="rolling-grid-caption">{caption}</div>
@@ -89,10 +94,21 @@ export function Grid({
         tabIndex={0}
       >
         <table className="lab-table rolling-table">
+          {colWidths && (
+            <colgroup>
+              {colWidths.map((w, idx) => (
+                <col key={idx} style={{ width: w }} />
+              ))}
+            </colgroup>
+          )}
           <thead>
             <tr>
-              {headings.map((h) => (
-                <th key={h} scope="col">
+              {headings.map((h, idx) => (
+                <th
+                  key={h}
+                  scope="col"
+                  className={rightSet.has(idx) ? "num-col" : undefined}
+                >
                   {h}
                 </th>
               ))}
@@ -101,11 +117,19 @@ export function Grid({
           <tbody>
             {rows.map(([first, ...rest], i) => (
               <tr key={i}>
-                <th scope="row" className="rolling-row-head">
+                <th
+                  scope="row"
+                  className={`rolling-row-head${rightSet.has(0) ? " num-col" : ""}`}
+                >
                   {first}
                 </th>
                 {rest.map((cell, j) => (
-                  <td key={j}>{cell}</td>
+                  <td
+                    key={j}
+                    className={rightSet.has(j + 1) ? "num-col" : undefined}
+                  >
+                    {cell}
+                  </td>
                 ))}
               </tr>
             ))}
@@ -123,6 +147,13 @@ export function Tickets({
   prediction: Prediction;
   actual: Draw | null;
 }) {
+  const methodKeys = Array.from(
+    new Set([
+      ...Object.keys(prediction.areas.area1.picks),
+      ...Object.keys(prediction.areas.area2.picks),
+    ]),
+  );
+
   return (
     <div className="rolling-tickets">
       <div className="rolling-ticket-meta">
@@ -146,44 +177,56 @@ export function Tickets({
         )}
       </div>
 
-      {areas.map((area) => (
-        <Grid
-          key={area}
-          caption={zone[area]}
-          headings={["方案", "選號", "命中"]}
-          rows={Object.entries(prediction.areas[area].picks).map(
-            ([key, picks]) => {
-              const wins = actual
-                ? area === "area1"
-                  ? actual.area1
-                  : [actual.area2]
-                : [];
-              const hitCount = picks.filter((n) => wins.includes(n)).length;
-              return [
-                label(key),
-                <div className="ball-group" key={key}>
-                  {picks.map((n) => (
-                    <NumberBall
-                      key={n}
-                      number={n}
-                      area={area}
-                      size="sm"
-                      isHit={wins.includes(n)}
-                    />
-                  ))}
-                </div>,
-                actual ? (
-                  <span className="hits-tag">
-                    <b>{hitCount}</b> 顆
-                  </span>
-                ) : (
-                  <span className="status-pill pending">待開獎</span>
-                ),
-              ];
-            },
-          )}
-        />
-      ))}
+      <Grid
+        caption="各方案選號與命中對照"
+        headings={["方案", "選號（第一區 + 第二區）", "命中"]}
+        alignRight={[2]}
+        colWidths={["24%", "50%", "26%"]}
+        rows={methodKeys.map((key) => {
+          const picks1 = prediction.areas.area1.picks[key] ?? [];
+          const picks2 = prediction.areas.area2.picks[key] ?? [];
+          const wins1 = actual ? actual.area1 : [];
+          const win2 = actual ? actual.area2 : null;
+          const hit1 = picks1.filter((n) => wins1.includes(n)).length;
+          const hit2 = picks2.filter((n) => win2 !== null && n === win2).length;
+
+          return [
+            label(key),
+            <div className="ball-group" key={key}>
+              {picks1.map((n) => (
+                <NumberBall
+                  key={`a1-${n}`}
+                  number={n}
+                  area="area1"
+                  size="sm"
+                  isHit={wins1.includes(n)}
+                />
+              ))}
+              {picks1.length > 0 && picks2.length > 0 && (
+                <span className="ball-sep" aria-hidden="true">
+                  +
+                </span>
+              )}
+              {picks2.map((n) => (
+                <NumberBall
+                  key={`a2-${n}`}
+                  number={n}
+                  area="area2"
+                  size="sm"
+                  isHit={win2 !== null && n === win2}
+                />
+              ))}
+            </div>,
+            actual ? (
+              <span className="hits-tag">
+                第一區 <b>{hit1}</b> 顆／第二區 <b>{hit2}</b> 顆
+              </span>
+            ) : (
+              <span className="status-pill pending">待開獎</span>
+            ),
+          ];
+        })}
+      />
     </div>
   );
 }

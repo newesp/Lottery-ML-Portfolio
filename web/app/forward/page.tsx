@@ -4,6 +4,7 @@ import { NumberBall } from "../components/NumberBall";
 import { SCHEDULE } from "../lib/constants";
 import { getForwardSummary } from "../lib/forward";
 import { num } from "../lib/format";
+import { ForwardAuditTable } from "./ForwardAuditTable";
 
 export const metadata = {
   title: "前瞻盲測",
@@ -357,127 +358,7 @@ export default function ForwardPage() {
           <Eyebrow>AUDIT LOG ｜ 盲測對獎紀錄表</Eyebrow>
           <h2>逐期預測與實際開獎結果核對</h2>
         </div>
-
-        {entries.length === 0 ? (
-          <p className="muted">目前尚無歷史盲測紀錄。</p>
-        ) : (
-          <div className="table-scroll">
-            <table className="lab-table audit-table">
-              <thead>
-                <tr>
-                  <th scope="col">目標開獎日</th>
-                  <th scope="col">狀態</th>
-                  <th scope="col">實際開獎號碼</th>
-                  <th scope="col">模型預測選號</th>
-                  <th scope="col">模型命中</th>
-                  <th scope="col">歷史頻率選號</th>
-                  <th scope="col">歷史頻率命中</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entries.map((entry) => {
-                  const actualA1 = entry.actual ? entry.actual.area1 : [];
-                  const actualA2 = entry.actual ? entry.actual.area2 : null;
-                  const isResolved = entry.status === "resolved";
-
-                  return (
-                    <tr key={entry.cutoff_draw_id} className={isResolved ? "resolved-row" : "pending-row"}>
-                      <td>
-                        <strong>{entry.assumed_target_date}</strong>
-                        {!entry.target_date_matched && (
-                          <span className="audit-warning-text">
-                            （實際開獎日 {entry.target_draw_id}）
-                          </span>
-                        )}
-                        {entry.input_data_changed && (
-                          <span className="audit-warning-text">
-                            （歷史資料曾修正）
-                          </span>
-                        )}
-                      </td>
-                      <td>
-                        <span className={`status-pill ${isResolved ? "resolved" : "pending"}`}>
-                          {isResolved ? "已開獎結算" : "待開獎"}
-                        </span>
-                      </td>
-                      <td>
-                        {entry.actual ? (
-                          <div className="ball-group">
-                            {actualA1.map((n) => (
-                              <NumberBall key={n} number={n} area="area1" size="sm" />
-                            ))}
-                            <span className="ball-sep" aria-hidden="true">+</span>
-                            {actualA2 !== null && <NumberBall number={actualA2} area="area2" size="sm" />}
-                          </div>
-                        ) : (
-                          <span className="muted">—</span>
-                        )}
-                      </td>
-                      <td>
-                        <div className="ball-group">
-                          {entry.picks.model.area1.map((n) => (
-                            <NumberBall
-                              key={n}
-                              number={n}
-                              area="area1"
-                              isHit={actualA1.includes(n)}
-                              size="sm"
-                            />
-                          ))}
-                          <span className="ball-sep" aria-hidden="true">+</span>
-                          <NumberBall
-                            number={entry.picks.model.area2[0]}
-                            area="area2"
-                            isHit={actualA2 === entry.picks.model.area2[0]}
-                            size="sm"
-                          />
-                        </div>
-                      </td>
-                      <td>
-                        {entry.hits ? (
-                          <span className="hits-tag">
-                            第一區 <b>{entry.hits.model.area1}</b> 顆／第二區 <b>{entry.hits.model.area2}</b> 顆
-                          </span>
-                        ) : (
-                          <span className="muted">—</span>
-                        )}
-                      </td>
-                      <td>
-                        <div className="ball-group">
-                          {entry.picks.historical_frequency.area1.map((n) => (
-                            <NumberBall
-                              key={n}
-                              number={n}
-                              area="area1"
-                              isHit={actualA1.includes(n)}
-                              size="sm"
-                            />
-                          ))}
-                          <span className="ball-sep" aria-hidden="true">+</span>
-                          <NumberBall
-                            number={entry.picks.historical_frequency.area2[0]}
-                            area="area2"
-                            isHit={actualA2 === entry.picks.historical_frequency.area2[0]}
-                            size="sm"
-                          />
-                        </div>
-                      </td>
-                      <td>
-                        {entry.hits ? (
-                          <span className="hits-tag">
-                            第一區 <b>{entry.hits.historical_frequency.area1}</b> 顆／第二區 <b>{entry.hits.historical_frequency.area2}</b> 顆
-                          </span>
-                        ) : (
-                          <span className="muted">—</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <ForwardAuditTable entries={entries} />
       </section>
 
       <RollingForward />

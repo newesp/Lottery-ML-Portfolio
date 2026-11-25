@@ -1250,6 +1250,56 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--orange);
 }
 
+.audit-table-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.audit-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+.audit-pagination-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.audit-page-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--navy);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.audit-page-btn:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: var(--navy);
+}
+
+.audit-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.audit-page-indicator {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--navy);
+}
+
 /* ==========================================================================
    Experiment Lab Component
    ========================================================================== */
@@ -1616,6 +1666,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.78rem;
   font-weight: 800;
   color: var(--muted);
+  text-align: left;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   border-bottom: 2px solid var(--line);
@@ -1630,7 +1681,13 @@ h1, h2, h3, h4, h5, h6 {
   white-space: nowrap;
 }
 
-.lab-table tr:hover td {
+.lab-table th.num-col,
+.lab-table td.num-col {
+  text-align: right;
+}
+
+.lab-table tr:hover td,
+.lab-table tr:hover th.rolling-row-head {
   background: #f8fafc;
 }
 

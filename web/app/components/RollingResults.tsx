@@ -95,6 +95,8 @@ function comparisonScores(c: Comparison) {
         "方案",
         c.plan.metric === "brier" ? "平均 Brier Score" : heading,
       ]}
+      alignRight={[1]}
+      colWidths={["60%", "40%"]}
       rows={rows}
     />
   );
@@ -165,6 +167,8 @@ export function RollingReplay() {
                       ? "相對 v1 模型（顆）"
                       : "相對 v1 模型（百分點）",
                   ]}
+                  alignRight={[1, 2]}
+                  colWidths={["44%", "30%", "26%"]}
                   rows={[
                     ...Object.entries(m.hits).map(([key, value]) => {
                       const diff = value - baselineHits;
@@ -396,6 +400,8 @@ export function RollingEvaluation() {
                 <Grid
                   caption={zone[a] + "機率評估"}
                   headings={["機率來源", "Brier Score"]}
+                  alignRight={[1]}
+                  colWidths={["65%", "35%"]}
                   rows={Object.entries(m.probabilities).map(([key, value]) => [
                     label(key),
                     value.brier.toFixed(5),
@@ -413,6 +419,8 @@ export function RollingEvaluation() {
                         "實際開出",
                         "候選數／期數",
                       ]}
+                      alignRight={[1, 2, 3]}
+                      colWidths={["25%", "25%", "25%", "25%"]}
                       rows={value.bins.flatMap((b, i) =>
                         b.count
                           ? [
@@ -430,6 +438,8 @@ export function RollingEvaluation() {
                   <Grid
                     caption="v2 混合選號減各對照方案"
                     headings={["對照方案", "平均差", "95% 描述性區間"]}
+                    alignRight={[1, 2]}
+                    colWidths={["48%", "22%", "30%"]}
                     rows={Object.entries(m.mixed_differences).map(
                       ([key, v]) => [
                         label(key),
