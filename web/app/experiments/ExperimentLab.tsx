@@ -59,7 +59,7 @@ export function ExperimentLab({ runs }: { runs: Run[] }) {
             className={`lab-tab ${area === "area1" ? "active" : ""}`}
             onClick={() => setArea("area1")}
           >
-            <span className="tab-badge zone1">第 1 區</span>
+            <span className="tab-badge zone1">第一區</span>
             <span className="tab-title">{GAME.area1.max} 選 {GAME.area1.pick}</span>
           </button>
           <button
@@ -69,7 +69,7 @@ export function ExperimentLab({ runs }: { runs: Run[] }) {
             className={`lab-tab ${area === "area2" ? "active" : ""}`}
             onClick={() => setArea("area2")}
           >
-            <span className="tab-badge zone2">第 2 區</span>
+            <span className="tab-badge zone2">第二區</span>
             <span className="tab-title">{GAME.area2.max} 選 {GAME.area2.pick}</span>
           </button>
         </div>
@@ -118,7 +118,7 @@ export function ExperimentLab({ runs }: { runs: Run[] }) {
             value={feature}
             onChange={(e) => setFeature(e.target.value)}
           >
-            <option value="all">全部模型與基準（含 Baseline）</option>
+            <option value="all">全部模型與對照基準</option>
             {Object.entries(FEATURE_NAMES).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
@@ -141,7 +141,7 @@ export function ExperimentLab({ runs }: { runs: Run[] }) {
           <div className="lab-summary-details">
             <span className="summary-meta">
               {areaLabel(area)} ·{" "}
-              {best.feature_set ? FEATURE_NAMES[best.feature_set] : "baseline 比較基準"}
+              {best.feature_set ? FEATURE_NAMES[best.feature_set] : "對照基準"}
             </span>
             <span className="summary-score">
               {METRIC_NAMES[metric]}：<b>{num(best.mean_metrics[metric], 4)}</b>
@@ -183,7 +183,7 @@ export function ExperimentLab({ runs }: { runs: Run[] }) {
                     <span className="bar-rank">{String(idx + 1).padStart(2, "0")}</span>
                     <b>{MODEL_NAMES[run.model] ?? run.model}</b>
                     <span className={`bar-kind-tag ${isBaseline ? "baseline" : "model"}`}>
-                      {isBaseline ? "Baseline" : "ML"}
+                      {isBaseline ? "基準" : "模型"}
                     </span>
                   </div>
                   <span className="bar-feature-sub">
@@ -229,10 +229,10 @@ export function ExperimentLab({ runs }: { runs: Run[] }) {
                     <td><b>{MODEL_NAMES[run.model] ?? run.model}</b></td>
                     <td>
                       <span className={`bar-kind-tag ${isBaseline ? "baseline" : "model"}`}>
-                        {isBaseline ? "Baseline" : "ML Model"}
+                        {isBaseline ? "基準" : "模型"}
                       </span>
                     </td>
-                    <td>{run.feature_set ? FEATURE_NAMES[run.feature_set] : "統計比較基準"}</td>
+                    <td>{run.feature_set ? FEATURE_NAMES[run.feature_set] : "對照基準"}</td>
                     <td style={{ textAlign: "right", fontFamily: "var(--font-mono)" }}>
                       <b>{num(run.mean_metrics[metric], 4)}</b>
                     </td>

@@ -139,20 +139,20 @@ export function buildEvaluationCallout(
   let baselineComparison = "";
   if (freq1 && freq2) {
     baselineComparison =
-      "與此同時，只按歷史累積出現率排序的簡單基準（Historical Frequency），在兩區的命中表現甚至還略勝一籌。";
+      "另外，不靠機器學習、只挑歷史常開號碼的簡單基準，在兩區的命中表現反而還略高一點。";
   } else if (freq1) {
     baselineComparison =
-      "與此同時，只按歷史累積出現率排序的簡單基準（Historical Frequency），在第一區甚至略勝一籌。";
+      "另外，不靠機器學習、只挑歷史常開號碼的簡單基準，在第一區的命中表現反而還略高一點。";
   } else if (freq2) {
     baselineComparison =
-      "與此同時，只按歷史累積出現率排序的簡單基準（Historical Frequency），在第二區甚至略勝一籌。";
+      "另外，不靠機器學習、只挑歷史常開號碼的簡單基準，在第二區的命中表現反而還略高一點。";
   } else {
     baselineComparison =
-      "與此同時，只按歷史累積出現率排序的簡單基準（Historical Frequency）表現也與模型相當。";
+      "另外，只挑歷史常開號碼的簡單基準表現也與模型相當。";
   }
 
   const decisionRule =
-    "統計判讀的原則很單純：信賴區間必須完整落在 0 以上，才能支持模型表現優於隨機；若跨越 0，就代表現有證據不足以排除運氣成分。";
+    "只有 95% 信賴區間整段大於 0，才能說模型表現優於隨機；只要區間跨越 0，就無法排除只是運氣波動。";
 
   return { pointComparison, ciSummary, baselineComparison, decisionRule };
 }

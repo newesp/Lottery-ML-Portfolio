@@ -24,6 +24,15 @@ function AreaResult({
   const rollingHits = num(data.baselines.rolling_frequency.average_hits);
   const verdict = ciVerdict(ci.lower, ci.upper);
 
+  const verdictMeta =
+    verdict === "above_zero"
+      ? { tone: "good", text: "95% CI 高於 0 · 具備統計優勢" }
+      : verdict === "below_zero"
+        ? { tone: "bad", text: "95% CI 低於 0 · 顯著低於隨機" }
+        : { tone: "neutral", text: "95% CI 跨越 0 · 無統計顯著優勢" };
+
+  const formatSigned = (val: number) => `${val > 0 ? "+" : ""}${num(val, 3)}`;
+
   // Compute percentage positions for forest plot on scale [-0.25, 0.25]
   const domainMin = -0.25;
   const domainMax = 0.25;
@@ -79,9 +88,9 @@ function AreaResult({
         {/* Scientific Forest Plot Visualizer */}
         <div className="forest-plot-container">
           <div className="forest-plot-labels">
-            <span>落後隨機 ({domainMin})</span>
-            <span className="forest-zero-label">基準線 (0.00)</span>
-            <span>領先隨機 (+{domainMax})</span>
+            <span>落後隨機（{domainMin}）</span>
+            <span className="forest-zero-label">基準線（0.00）</span>
+            <span>領先隨機（+{domainMax}）</span>
           </div>
 
           <div className="forest-plot-track">
@@ -110,9 +119,9 @@ function AreaResult({
           </div>
 
           <div className="forest-ci-bounds">
-            <span className="bound-tag">Lower: {num(ci.lower, 3)}</span>
-            <span className="verdict-pill neutral">95% CI 跨越 0 · 無統計顯著優勢</span>
-            <span className="bound-tag">Upper: +{num(ci.upper, 3)}</span>
+            <span className="bound-tag">95% 下界：{formatSigned(ci.lower)}</span>
+            <span className={`verdict-pill ${verdictMeta.tone}`}>{verdictMeta.text}</span>
+            <span className="bound-tag">95% 上界：{formatSigned(ci.upper)}</span>
           </div>
         </div>
 
@@ -166,7 +175,6 @@ export default function EvaluationPage() {
           Holdout）：在特徵設計、調參與選型過程中完全隔離，直到所有決策定案後才一次開箱計分。
         </p>
       </PageIntro>
-      <RollingEvaluation />
 
       <div className="results-grid">
         <AreaResult
@@ -182,7 +190,7 @@ export default function EvaluationPage() {
       </div>
 
       <p className="muted" style={{ fontSize: "0.85rem", margin: "16px 0 32px" }}>
-        註：結果檔中的基準欄位鍵值沿用 v1 命名 <code>rolling_frequency</code>，實際演算法為依歷史累積出現率排序（Historical Frequency）。
+        備註：此處盲測採用全部歷史資料（v1）。結果檔欄位名稱仍保留 <code>rolling_frequency</code>，但實際算法是依全部歷史累積出現率排序。
       </p>
 
       <Callout tone="warning" title="帳面平均值略高，不等於證明模型有效">
@@ -197,16 +205,16 @@ export default function EvaluationPage() {
 
       <Callout tone="neutral" title="v1.1 勘誤紀錄：修正隨機選號基準的同分排序偏差">
         <p>
-          在初版{" "}
+          初版{" "}
           <RepoLink path="artifacts/experiments/holdout-v1.json">
             holdout-v1.json
           </RepoLink>{" "}
-          中，<code>predict_uniform</code>{" "}
-          對所有號碼給出相同機率，經固定同分排序規則後，退化為每期固定挑選前幾號（第一區平均對中 0.872 顆、第二區 0.106 顆），低於真正的隨機選號數學期望值（第一區 36/38 ≈ 0.947、第二區 1/8 = 0.125）。更新版{" "}
+          計算隨機基準時有排序瑕疵：<code>predict_uniform</code>{" "}
+          給每個號碼相同機率，經固定排序後反而每期都挑前幾號（第一區平均對中 0.872 顆、第二區 0.106 顆），低於真正的隨機期望值（第一區 36/38 ≈ 0.947、第二區 1/8 = 0.125）。更新版{" "}
           <RepoLink path="artifacts/experiments/holdout-v1.1.json">
             holdout-v1.1.json
           </RepoLink>{" "}
-          在不重訓模型的前提下，改以解析期望值作為比較基準；修正後模型與隨機選號的帳面差距進一步縮小，兩區 95% 信賴區間依然跨越 0。
+          在不重訓模型的前提下改用理論期望值重算；修正後模型與隨機組的帳面差距更小，兩區 95% 信賴區間依然跨越 0。
         </p>
       </Callout>
 
@@ -221,6 +229,8 @@ export default function EvaluationPage() {
           則進一步檢驗模型輸出的「預測機率」是否誠實反映真實不確定性（兩者皆越低越好）。舉例來說，如果模型對某個號碼給出極高信心卻沒開出，就會在 Log Loss 上受到重罰。同時觀察這兩項指標，能避免模型只是碰巧押中幾顆球，機率估計卻完全失準。
         </p>
       </section>
+
+      <RollingEvaluation />
     </div>
   );
 }

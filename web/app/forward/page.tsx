@@ -1,6 +1,7 @@
 import { RollingForward } from "../components/RollingResults";
 import { Callout, Eyebrow, Metric, PageIntro, RepoLink } from "../components/UI";
 import { NumberBall } from "../components/NumberBall";
+import { SCHEDULE } from "../lib/constants";
 import { getForwardSummary } from "../lib/forward";
 import { num } from "../lib/format";
 
@@ -60,18 +61,17 @@ export default function ForwardPage() {
         }
       >
         <p>
-          為了徹底排除「事後諸葛」與資料洩漏的可能，此頁面的所有預測皆在開獎當晚 20:00 前由自動化排程算好並寫入公開帳本，開獎後再依據同一份帳本對獎結算。
+          這頁所有預測都由 GitHub Actions 在{SCHEDULE.description}更新完最新開獎結果後自動算好並寫入公開帳本（最晚截止線為開獎當晚 20:00），開獎後直接拿同一份紀錄對獎，避免事後改答案或資料洩漏。
         </p>
         <p className="sub-note" style={{ marginTop: "12px", fontSize: "0.88rem", color: "var(--muted)" }}>
           原始預測紀錄存放於 <RepoLink path="artifacts/forward/ledger.jsonl">artifacts/forward/ledger.jsonl</RepoLink>（只增不減的 Append-only 帳本）。
         </p>
       </PageIntro>
-      <RollingForward />
 
       {/* 前瞻盲測看板 */}
       <section className="content-section">
         <div className="section-heading">
-          <Eyebrow>FORWARD DISPATCH ｜ v1 前瞻盲測看板</Eyebrow>
+          <Eyebrow>FORWARD DISPATCH ｜ v1 現役（全部歷史）前瞻看板</Eyebrow>
           <h2>
             {latest_pending
               ? `基準期 ${latest_pending.cutoff_draw_id} ➜ 目標開獎日 ${latest_pending.assumed_target_date}`
@@ -120,7 +120,7 @@ export default function ForwardPage() {
                   <b>模型選號</b>
                   <small>
                     {cutoffEntry && cutoffEntry.hits
-                      ? `命中第一區 ${cutoffEntry.hits.model.area1} 顆 / 第二區 ${cutoffEntry.hits.model.area2} 顆`
+                      ? `命中第一區 ${cutoffEntry.hits.model.area1} 顆／第二區 ${cutoffEntry.hits.model.area2} 顆`
                       : "selection-v1 RF Ensemble"}
                   </small>
                 </span>
@@ -156,7 +156,7 @@ export default function ForwardPage() {
                   <b>歷史累積頻率</b>
                   <small>
                     {cutoffEntry && cutoffEntry.hits
-                      ? `命中第一區 ${cutoffEntry.hits.historical_frequency.area1} 顆 / 第二區 ${cutoffEntry.hits.historical_frequency.area2} 顆`
+                      ? `命中第一區 ${cutoffEntry.hits.historical_frequency.area1} 顆／第二區 ${cutoffEntry.hits.historical_frequency.area2} 顆`
                       : "Historical Frequency"}
                   </small>
                 </span>
@@ -339,7 +339,7 @@ export default function ForwardPage() {
                         {isPicked ? (
                           <span className="picked-badge">★ 當期選號（Top 6）</span>
                         ) : (
-                          <span className="muted">備選候選碼</span>
+                          <span className="muted">未入選</span>
                         )}
                       </td>
                     </tr>
@@ -371,7 +371,7 @@ export default function ForwardPage() {
                   <th scope="col">模型預測選號</th>
                   <th scope="col">模型命中</th>
                   <th scope="col">歷史頻率選號</th>
-                  <th scope="col">Baseline 命中</th>
+                  <th scope="col">歷史頻率命中</th>
                 </tr>
               </thead>
               <tbody>
@@ -386,12 +386,12 @@ export default function ForwardPage() {
                         <strong>{entry.assumed_target_date}</strong>
                         {!entry.target_date_matched && (
                           <span className="audit-warning-text">
-                            (實際開獎日 {entry.target_draw_id})
+                            （實際開獎日 {entry.target_draw_id}）
                           </span>
                         )}
                         {entry.input_data_changed && (
                           <span className="audit-warning-text">
-                            (歷史資料曾修正)
+                            （歷史資料曾修正）
                           </span>
                         )}
                       </td>
@@ -436,7 +436,7 @@ export default function ForwardPage() {
                       <td>
                         {entry.hits ? (
                           <span className="hits-tag">
-                            第 1 區 <b>{entry.hits.model.area1}</b> 顆 / 第 2 區 <b>{entry.hits.model.area2}</b> 顆
+                            第一區 <b>{entry.hits.model.area1}</b> 顆／第二區 <b>{entry.hits.model.area2}</b> 顆
                           </span>
                         ) : (
                           <span className="muted">—</span>
@@ -465,7 +465,7 @@ export default function ForwardPage() {
                       <td>
                         {entry.hits ? (
                           <span className="hits-tag">
-                            第 1 區 <b>{entry.hits.historical_frequency.area1}</b> 顆 / 第 2 區 <b>{entry.hits.historical_frequency.area2}</b> 顆
+                            第一區 <b>{entry.hits.historical_frequency.area1}</b> 顆／第二區 <b>{entry.hits.historical_frequency.area2}</b> 顆
                           </span>
                         ) : (
                           <span className="muted">—</span>
@@ -479,6 +479,8 @@ export default function ForwardPage() {
           </div>
         )}
       </section>
+
+      <RollingForward />
 
       {/* 免責聲明 */}
       <section className="content-section">
