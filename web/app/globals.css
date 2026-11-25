@@ -2443,6 +2443,13 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--muted);
+  white-space: nowrap;
+}
+
+.rolling-picker-control .lab-select {
+  width: auto;
+  min-width: 150px;
+  min-height: 40px;
 }
 
 .rolling-tickets {
