@@ -1,3 +1,4 @@
+import { RollingEvaluation } from "../components/RollingResults";
 import { Callout, Metric, PageIntro, RepoLink } from "../components/UI";
 import { getSiteFacts, type AreaHoldoutData } from "../lib/facts";
 import { featureLabel, modelLabel } from "../lib/labels";
@@ -165,6 +166,7 @@ export default function EvaluationPage() {
           Holdout）：在特徵設計、調參與選型過程中完全隔離，直到所有決策定案後才一次開箱計分。
         </p>
       </PageIntro>
+      <RollingEvaluation />
 
       <div className="results-grid">
         <AreaResult

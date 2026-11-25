@@ -1,3 +1,4 @@
+import { RollingReplay } from "../components/RollingResults";
 import { Callout, PageIntro, RepoLink } from "../components/UI";
 import { getSiteFacts } from "../lib/facts";
 import { dev } from "../lib/results";
@@ -24,6 +25,7 @@ export default function ExperimentsPage() {
           ；網頁端只負責篩選與視覺化，不會為了湊出漂亮數字而在瀏覽器裡動態重訓模型。
         </p>
       </PageIntro>
+      <RollingReplay />
       <ExperimentLab runs={dev.runs} />
       <Callout title="為什麼不無止境地嘗試所有參數組合？">
         <p>

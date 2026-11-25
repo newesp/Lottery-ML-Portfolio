@@ -1,0 +1,21 @@
+{
+  "comparisons": [],
+  "data_through": "2026-11-12",
+  "entries": [],
+  "kind": "forward",
+  "last_publication": null,
+  "missed": [
+    {
+      "cutoff_draw_id": "2026-11-12",
+      "deadline": "2026-11-16T20:00:00+08:00",
+      "reason": "skipped_late",
+      "target": "2026-11-16",
+      "version": "rolling-v2"
+    }
+  ],
+  "published_methods": {
+    "area1": "forward-v1/model",
+    "area2": "forward-v1/model"
+  },
+  "schema_version": 2
+}

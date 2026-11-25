@@ -24,20 +24,38 @@ jobs:
       - run: pip install -e .
       - run: lottery-ml ingest --root .
       - run: lottery-ml forward predict --root .
+      - run: lottery-ml forward predict-v2 --root .
       - name: Guard append-only ledger
         shell: bash
         run: |
           if [ -f artifacts/forward/ledger.jsonl ]; then
             git diff --numstat -- artifacts/forward/ledger.jsonl | awk '$2 != 0 { exit 1 }'
           fi
+          git diff --exit-code -- artifacts/forward/v2/entries artifacts/forward/v2/missed artifacts/forward/v2/plans artifacts/forward/v2/decisions artifacts/forward/v2/publications
       - name: Commit verified snapshot and forward ledger when changed
         shell: bash
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if [ -z "$(git status --porcelain --untracked-files=all)" ]; then
             echo "No verified data or ledger change."; exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/processed data/raw/snapshots data/manifests artifacts/forward
           git commit -m "data: publish verified snapshot and forward ledger"
           git push
+
+      - name: Restore verified single-draw predictions
+        uses: actions/cache@v4
+        with:
+          path: .rolling-cache
+          key: rolling-v2-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: rolling-v2-${{ runner.os }}-
+      - name: Rebuild rolling-year report after forward registration
+        run: lottery-ml experiments walk-forward --root .
+      - name: Publish rolling-year report
+        run: |
+          git add artifacts/experiments/walk-forward-v2.json
+          if ! git diff --cached --quiet; then
+            git commit -m "evaluation: refresh rolling-year replay"
+            git push
+          fi

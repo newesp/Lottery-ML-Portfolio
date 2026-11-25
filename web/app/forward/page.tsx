@@ -1,3 +1,4 @@
+import { RollingForward } from "../components/RollingResults";
 import { Callout, Eyebrow, Metric, PageIntro, RepoLink } from "../components/UI";
 import { NumberBall } from "../components/NumberBall";
 import { getForwardSummary } from "../lib/forward";
@@ -26,6 +27,7 @@ export default function ForwardPage() {
             這套機制會在尚未開獎前，將機器學習模型的選號寫入公開且只增不減的帳本（<code>ledger.jsonl</code>），待開獎結果公布後再自動結算真實盲測成績。
           </p>
         </PageIntro>
+        <RollingForward />
         <Callout tone="warning" title="前瞻盲測尚未產生紀錄">
           <p>
             目前尚未讀取到前瞻盲測彙整檔（<code>artifacts/forward/summary.json</code>）。待排程完成首次開獎前預測後，此頁面將自動呈現最新選號與核對紀錄。
@@ -64,11 +66,12 @@ export default function ForwardPage() {
           原始預測紀錄存放於 <RepoLink path="artifacts/forward/ledger.jsonl">artifacts/forward/ledger.jsonl</RepoLink>（只增不減的 Append-only 帳本）。
         </p>
       </PageIntro>
+      <RollingForward />
 
       {/* 前瞻盲測看板 */}
       <section className="content-section">
         <div className="section-heading">
-          <Eyebrow>FORWARD DISPATCH ｜ 前瞻盲測看板</Eyebrow>
+          <Eyebrow>FORWARD DISPATCH ｜ v1 前瞻盲測看板</Eyebrow>
           <h2>
             {latest_pending
               ? `基準期 ${latest_pending.cutoff_draw_id} ➜ 目標開獎日 ${latest_pending.assumed_target_date}`

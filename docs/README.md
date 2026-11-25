@@ -13,6 +13,7 @@
 - [資料管線與操作方式](data-pipeline.md)
 - [前瞻盲測帳本規格](specs/forward-test-ledger.md)
 - [Holdout v1.1 勘誤說明](specs/holdout-v1.1-erratum.md)
+- [近八年訓練與近一年逐期驗證規格](specs/rolling-eight-year-validation.md)
 
 ## 規劃與延伸主題
 

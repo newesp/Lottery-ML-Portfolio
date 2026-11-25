@@ -2249,3 +2249,10 @@ h1, h2, h3, h4, h5, h6 {
     display: none;
   }
 }
+
+.rolling-results details { margin-block: .75rem; padding: .75rem; border: 1px solid currentColor; border-radius: .5rem; }
+.rolling-results summary { cursor: pointer; }
+.rolling-scroll { max-inline-size: 100%; overflow-x: auto; margin-block: 1rem; }
+.rolling-scroll table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.rolling-scroll caption { text-align: start; font-weight: 700; }
+.rolling-scroll th, .rolling-scroll td { text-align: start; padding: .5rem; border-bottom: 1px solid currentColor; }

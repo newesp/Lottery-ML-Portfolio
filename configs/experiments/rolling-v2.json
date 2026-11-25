@@ -1,0 +1,9 @@
+{
+  "protocol_id": "rolling-v2",
+  "training_years": 8,
+  "report_years": 1,
+  "selection": "configs/experiments/selection-v1.json",
+  "features": "configs/features/v1.json",
+  "rank_weights": [0.5, 0.5],
+  "projection": "capped-simplex"
+}

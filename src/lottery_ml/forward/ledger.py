@@ -15,7 +15,7 @@ from lottery_ml.evaluation.metrics import expected_uniform_hits
 from lottery_ml.experiments.artifacts import write_json_artifact
 from lottery_ml.experiments.config import FeatureConfig
 from lottery_ml.experiments.holdout import SelectionProtocol
-from lottery_ml.forward.predict import predict_next, serialize_predictions
+from lottery_ml.forward.predict import predict_next, scoring_code_hash, serialize_predictions
 from lottery_ml.forward.schedule import (
     TAIPEI,
     next_draw_date,
@@ -303,6 +303,7 @@ def create_entry(
     ledger_file = ledger_path or (root / "artifacts" / "forward" / "ledger.jsonl")
     summary_file = summary_path or (root / "artifacts" / "forward" / "summary.json")
 
+    fixed_now = now
     now = now or datetime.now(TAIPEI)
     if now.tzinfo is None:
         now = now.replace(tzinfo=TAIPEI)
@@ -327,6 +328,7 @@ def create_entry(
 
         entry: dict[str, Any] = {
             "schema_version": "1.0.0",
+            "code_sha256": scoring_code_hash(),
             "protocol_id": "forward-v1",
             "selection_id": selection.selection_id,
             "selection_sha256": selection_sha,
@@ -341,7 +343,11 @@ def create_entry(
             "environment": get_environment(),
             "predictions": serialized_preds,
         }
-        status = append_entry(ledger_file, entry)
+        published = fixed_now or datetime.now(TAIPEI)
+        if published.tzinfo is None:
+            published = published.replace(tzinfo=TAIPEI)
+        entry["generated_at"] = published.isoformat()
+        status = append_entry(ledger_file, entry) if published < deadline else "skipped_late"
 
     # Always rebuild summary
     updated_entries = load_ledger_entries(ledger_file) if ledger_file.exists() else []

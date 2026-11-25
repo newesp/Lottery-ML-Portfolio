@@ -1,0 +1,7 @@
+{
+  "parallel_protocols": ["rolling-v2"],
+  "published": {
+    "area1": "forward-v1/model",
+    "area2": "forward-v1/model"
+  }
+}

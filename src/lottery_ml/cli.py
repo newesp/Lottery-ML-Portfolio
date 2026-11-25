@@ -82,6 +82,28 @@ def build_parser() -> argparse.ArgumentParser:
         "summarize", help="rebuild summary from ledger"
     )
     f_summarize.add_argument("--root", type=Path, default=Path.cwd())
+    walk = experiment_commands.add_parser("walk-forward")
+    walk.add_argument("--root", type=Path, default=Path.cwd())
+    walk.add_argument("--as-of", type=date.fromisoformat, default=datetime.now(TAIPEI).date())
+    walk.add_argument("--limit", type=int, help="pilot using latest N draws")
+    walk.add_argument("--output", type=Path)
+    verify = experiment_commands.add_parser("verify-entry")
+    verify.add_argument("--root", type=Path, default=Path.cwd())
+    verify.add_argument("--entry", type=Path, required=True)
+    verify.add_argument("--dataset", type=Path, default=Path("data/processed/power-lottery.json"))
+    for name in ("predict-v2", "summarize-v2", "register-comparison"):
+        command = forward_commands.add_parser(name)
+        command.add_argument("--root", type=Path, default=Path.cwd())
+        if name == "predict-v2":
+            command.add_argument("--protocol", help="register only this rolling protocol")
+        if name == "register-comparison":
+            for field in ("id", "area", "metric", "incumbent", "candidate"):
+                command.add_argument("--" + field, required=True)
+            command.add_argument("--incumbent-entry", type=Path)
+            command.add_argument("--candidate-entry", type=Path)
+            command.add_argument("--first", type=date.fromisoformat, required=True)
+            command.add_argument("--count", type=int, default=104)
+            command.add_argument("--margin", type=float, default=0.0)
     return parser
 
 
@@ -94,6 +116,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         args = parser.parse_args(argv)
     except SystemExit as error:
         return cast(int, error.code)
+    rolling_experiment = args.command == "experiments" and args.experiment_command in (
+        "walk-forward", "verify-entry"
+    )
+    rolling_forward = args.command == "forward" and args.forward_command in (
+        "predict-v2", "summarize-v2", "register-comparison"
+    )
+    if rolling_experiment or rolling_forward:
+        return _run_rolling(args)
     if args.command == "experiments" and args.experiment_command == "development":
         return _run_development(args)
     if args.command == "experiments" and args.experiment_command == "holdout":
@@ -144,6 +174,51 @@ def main(argv: Sequence[str] | None = None) -> int:
             sort_keys=True,
         )
     )
+    return 0
+
+
+def _run_rolling(args: argparse.Namespace) -> int:
+    from lottery_ml.data.validation import validate_dataset
+    from lottery_ml.experiments.rolling import RollingProtocol, replay, verify_entry
+    from lottery_ml.forward.comparison import (
+        forward_report,
+        publish_methods,
+        register_plan,
+        register_prediction,
+    )
+
+    root = Path(args.root).resolve()
+    try:
+        if getattr(args, "experiment_command", None) == "verify-entry":
+            draws = load_canonical(root / args.dataset)
+            validate_dataset(draws, previous=[], corrections=[])
+            verify_entry(root, draws, json.loads((root / args.entry).read_bytes()))
+            print("prediction reproduced")
+            return 0
+        draws = load_canonical(root / "data/processed/power-lottery.json")
+        validate_dataset(draws, previous=[], corrections=[])
+        if args.command == "experiments":
+            report = replay(root, draws, args.as_of, args.limit)
+            output = args.output or Path("artifacts/experiments/walk-forward-v2.json")
+            write_json_artifact(root / output, report)
+            print(f"{len(report['rows'])} draws: {output}")
+        else:
+            if args.forward_command == "register-comparison":
+                print(register_plan(root, args.id, args.area, args.metric, args.incumbent,
+                                    args.candidate, args.first, args.count, args.margin,
+                                    datetime.now(TAIPEI), args.incumbent_entry,
+                                    args.candidate_entry))
+            if args.forward_command == "predict-v2":
+                config_path = root / "configs/experiments/forward-methods.json"
+                config = json.loads(config_path.read_bytes())
+                versions = [args.protocol] if args.protocol else config["parallel_protocols"]
+                for version in versions:
+                    print(version, register_prediction(root, draws, RollingProtocol(root, version)))
+                publish_methods(root, draws, config["published"])
+            forward_report(root, draws)
+    except (ValueError, OSError, ArtifactError) as error:
+        print(str(error), file=sys.stderr)
+        return 1
     return 0
 
 

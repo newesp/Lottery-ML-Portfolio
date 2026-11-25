@@ -11,6 +11,7 @@ from typing import Protocol, cast
 import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
+from sklearn.ensemble import RandomForestClassifier
 
 from lottery_ml.data.contracts import DrawRecord
 from lottery_ml.data.storage import serialize_draws
@@ -86,6 +87,8 @@ def fit_seed_ensemble(
     train_x: pd.DataFrame,
     train_y: pd.Series,
     eval_x: pd.DataFrame,
+    *,
+    deterministic_prediction: bool = False,
 ) -> tuple[list[NDArray[np.float64]], NDArray[np.float64]]:
     """Fit an estimator for each seed and return per-seed probabilities and their mean ensemble."""
     seed_probabilities: list[NDArray[np.float64]] = []
@@ -95,6 +98,9 @@ def fit_seed_ensemble(
             build_estimator(model, parameters, seed),
         )
         estimator.fit(train_x, train_y)
+        if deterministic_prediction and isinstance(estimator, RandomForestClassifier):
+            # Accumulate tree probabilities in a fixed order, including exact ties.
+            estimator.n_jobs = 1
         proba = np.asarray(estimator.predict_proba(eval_x)[:, 1], dtype=np.float64)
         seed_probabilities.append(proba)
     ensemble_proba = np.mean(seed_probabilities, axis=0)
