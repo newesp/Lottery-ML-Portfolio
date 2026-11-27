@@ -1,9 +1,301 @@
 {
   "comparisons": [],
-  "data_through": "2026-11-12",
-  "entries": [],
+  "data_through": "2026-11-26",
+  "entries": [
+    {
+      "actual": null,
+      "areas": {
+        "area1": {
+          "picks": {
+            "historical_frequency": [
+              3,
+              14,
+              17,
+              21,
+              29,
+              31
+            ],
+            "mixed": [
+              14,
+              17,
+              27,
+              29,
+              31,
+              35
+            ],
+            "model": [
+              1,
+              5,
+              9,
+              14,
+              27,
+              31
+            ]
+          },
+          "scores": {
+            "adjusted": [
+              0.21034846228166967,
+              0.12188276381675042,
+              0.15133946066027576,
+              0.19602485564703215,
+              0.22855617956901284,
+              0.1053495713941891,
+              0.1497048390058729,
+              0.12036268245675641,
+              0.21248285982471657,
+              0.17026348279276665,
+              0.1608968887778335,
+              0.11041761430332286,
+              0.14873988568690144,
+              0.20576322841508363,
+              0.14949584559508694,
+              0.1749475926847986,
+              0.16690275978786626,
+              0.15737230017278467,
+              0.10940873976462556,
+              0.13392509753569964,
+              0.13729587372007176,
+              0.20422620750328394,
+              0.18890897849840566,
+              0.20150283804638594,
+              0.10502284233681758,
+              0.14290295868267017,
+              0.2531712981573981,
+              0.13557296770764174,
+              0.15234260570943614,
+              0.1389721946470389,
+              0.24883309470792747,
+              0.11677654937776591,
+              0.09656568628491663,
+              0.12046065561024114,
+              0.20457601899699449,
+              0.14233846614854567,
+              0.11954888787354051,
+              0.10679676581787217
+            ],
+            "raw": [
+              0.22174176640137358,
+              0.13327606793645433,
+              0.16273276477997967,
+              0.20741815976673605,
+              0.23994948368871674,
+              0.11674287551389302,
+              0.1610981431255768,
+              0.13175598657646032,
+              0.22387616394442048,
+              0.18165678691247056,
+              0.17229019289753741,
+              0.12181091842302678,
+              0.16013318980660535,
+              0.21715653253478753,
+              0.16088914971479085,
+              0.1863408968045025,
+              0.17829606390757016,
+              0.16876560429248857,
+              0.12080204388432947,
+              0.14531840165540355,
+              0.14868917783977567,
+              0.21561951162298784,
+              0.20030228261810956,
+              0.21289614216608985,
+              0.1164161464565215,
+              0.15429626280237407,
+              0.264564602277102,
+              0.14696627182734565,
+              0.16373590982914005,
+              0.1503654987667428,
+              0.2602263988276314,
+              0.12816985349746982,
+              0.10795899040462054,
+              0.13185395972994504,
+              0.2159693231166984,
+              0.15373177026824958,
+              0.13094219199324442,
+              0.11819006993757608
+            ]
+          }
+        },
+        "area2": {
+          "picks": {
+            "historical_frequency": [
+              2
+            ],
+            "mixed": [
+              2
+            ],
+            "model": [
+              2
+            ]
+          },
+          "scores": {
+            "adjusted": [
+              0.10002625477074047,
+              0.18180186336485984,
+              0.09035394430018437,
+              0.13915080046972317,
+              0.13830435856065124,
+              0.10822424508421254,
+              0.09302207765663345,
+              0.1491164557929951
+            ],
+            "raw": [
+              0.10159312826498629,
+              0.18336873685910568,
+              0.09192081779443019,
+              0.140717673963969,
+              0.13987123205489707,
+              0.10979111857845836,
+              0.09458895115087927,
+              0.15068332928724093
+            ]
+          }
+        }
+      },
+      "code_sha256": "a09bb9f01e31b882c01748fcb350a56c1f4cc0de334b639a56bb9f85b9cf7d0c",
+      "cutoff_draw_id": "2026-11-26",
+      "definition": {
+        "features": {
+          "ewm_halflives": [
+            5,
+            10,
+            20,
+            50
+          ],
+          "feature_sets": {
+            "frequency": [
+              "frequency"
+            ],
+            "frequency_gap": [
+              "frequency",
+              "gap"
+            ],
+            "full": [
+              "frequency",
+              "gap",
+              "context",
+              "cooccurrence"
+            ],
+            "temporal_context": [
+              "frequency",
+              "context"
+            ]
+          },
+          "rolling_windows": [
+            3,
+            5,
+            10,
+            20,
+            50,
+            100,
+            200
+          ],
+          "schema_version": "1.0.0",
+          "version": "v1"
+        },
+        "protocol": {
+          "features": "configs/features/v1.json",
+          "projection": "capped-simplex",
+          "protocol_id": "rolling-v2",
+          "rank_weights": [
+            0.5,
+            0.5
+          ],
+          "report_years": 1,
+          "selection": "configs/experiments/selection-v1.json",
+          "training_years": 8
+        },
+        "selection": {
+          "areas": {
+            "area1": {
+              "config_id": "rf-leaf10",
+              "feature_set": "frequency_gap",
+              "model": "random_forest",
+              "parameters": {
+                "config_id": "rf-leaf10",
+                "max_depth": null,
+                "max_features": "sqrt",
+                "min_samples_leaf": 10,
+                "n_estimators": 100
+              },
+              "seeds": [
+                17,
+                42,
+                2026
+              ]
+            },
+            "area2": {
+              "config_id": "rf-leaf10",
+              "feature_set": "full",
+              "model": "random_forest",
+              "parameters": {
+                "config_id": "rf-leaf10",
+                "max_depth": null,
+                "max_features": "sqrt",
+                "min_samples_leaf": 10,
+                "n_estimators": 100
+              },
+              "seeds": [
+                17,
+                42,
+                2026
+              ]
+            }
+          },
+          "bootstrap_resamples": 10000,
+          "bootstrap_seed": 2026,
+          "development_artifact": "artifacts/experiments/development-v1.json",
+          "development_artifact_sha256": "aabbe6361a8327f3cbe4564a8dd4f9bde59b88b0721f2bbe2ed35e1575aa448e",
+          "holdout_start": "2024-01-01",
+          "schema_version": "1.0.0",
+          "selection_id": "selection-v1",
+          "selection_metric": "mean_cv_average_hits"
+        }
+      },
+      "environment": {
+        "lightgbm": "4.7.0",
+        "numpy": "2.5.5",
+        "pandas": "2.3.3",
+        "python": "3.12.16",
+        "scikit-learn": "1.9.1"
+      },
+      "feature_config_sha256": "a36bba6cde47da3614aa68ca54759c2bca7c9ccbd35da0ec5a2f718bfb6d4c82",
+      "generated_at": "2026-11-27T15:14:55.315588+08:00",
+      "git_commit": "a117078ff2f5f40a61910cb4d8cfcf9dfd6e4fb1",
+      "input_data_changed": false,
+      "input_sha256": "8fae126d6d0b09a2d6055cfc04ea5c2fbea41c015abfb97b36748a356af01a62",
+      "kind": "forward",
+      "protocol_sha256": "b394e912e4343e71b82e51c2cf2836419000f052e4faf93d4d054d975892994f",
+      "selection_sha256": "6c18d24cc39c09ee6527548290e62afc36bc04b11e5eab45f684a50530f7caaa",
+      "status": "pending",
+      "target": "2026-11-30",
+      "train_count": 833,
+      "train_first": "2018-12-03",
+      "train_last": "2026-11-26",
+      "version": "rolling-v2"
+    }
+  ],
   "kind": "forward",
-  "last_publication": null,
+  "last_publication": {
+    "generated_at": "2026-11-27T15:14:55.317299+08:00",
+    "methods": {
+      "area1": "forward-v1/model",
+      "area2": "forward-v1/model"
+    },
+    "picks": {
+      "area1": [
+        5,
+        9,
+        10,
+        11,
+        27,
+        31
+      ],
+      "area2": [
+        2
+      ]
+    },
+    "target": "2026-11-30"
+  },
   "missed": [
     {
       "cutoff_draw_id": "2026-11-12",
